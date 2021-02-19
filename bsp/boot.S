@@ -74,11 +74,39 @@
 .extern xDtbAddr
 #endif
 
+#if __CHERI_PURE_CAPABILITY__
+.extern xISRStackTop
+.extern pvAlmightyDataCap
+.extern pvAlmightyCodeCap
+
+# The CPU starts in hybrid, and the boot initialisation has to be in hybrid.
+.option nocapmode
+#endif /* __CHERI_PURE_CAPABILITY__ */
+
 /* Startup code */
+.text
 .globl boot
+.type boot, @function
 boot:
     li t6, 0x1800
     csrw mstatus, t6
+
+#ifdef __CHERI_PURE_CAPABILITY__
+    # W^X for PCC and DDC
+    cspecialrw      ct0, ddc, cnull
+    li              t1, (1<<1)
+    not             t1, t1
+    candperm        ct0, ct0, t1
+    cspecialrw      cnull, ddc, ct0
+
+    cspecialrw      ct0, pcc, cnull
+    li              t1, ((1<<3) | (1<<5))
+    not             t1, t1
+    candperm        ct0, ct0, t1
+    la              t2, _mstart
+    csetoffset      ct0, ct0, t2
+    cjr             ct0
+#else
 #ifdef NETBOOT
 #if __riscv_xlen == 64
     sd              a1, xDtbAddr, t6
@@ -86,6 +114,7 @@ boot:
     sw              a1, xDtbAddr, t6
 #endif
 #endif
+#endif /* __CHERI_PURE_CAPABILITY__ */
     j _mstart
 
 _mstart:
@@ -94,7 +123,7 @@ _mstart:
     li	x3, 0
     li	x4, 0
     li	x5, 0
-	li	x6, 0
+    li	x6, 0
     li	x7, 0
     li	x8, 0
     li	x9, 0
@@ -146,8 +175,56 @@ write_stack_pattern:
     jal	fill_block
 
 init_stack:
+#if __CHERI_PURE_CAPABILITY__
+    # From now on, do purecap ABI but in hybrid mode.
+    la              sp, _stack_end
+    cfromptr        csp, ddc, sp # Get DDC.
+    la              t2, _stack
+    sub             t2, t2, sp # length of the stack
+    csetbounds      csp, csp, t2
+    cincoffset      csp, csp, t2
+
+    # The same stack is later used by the kernel.
+    la              t0, xISRStackTop
+    sc              csp, 0(t0)
+
+    cspecialrw      ct0, ddc, cnull # Get DDC.
+    la              t1, pvAlmightyDataCap
+    sc              ct0, 0(t1)
+
+    cspecialrw      ct0, pcc, cnull # Get PCC.
+    li              t1, 1
+    csetflags       ct0, ct0, t1
+    la              t1, pvAlmightyCodeCap
+    sc              ct0, 0(t1)
+
+    # Initialise the captable.
+    # ct0 is still PCC
+    la              t1, _start_purecap
+    csetoffset      ct0, ct0, t1
+    cjalr           cra, ct0
+
+    # From now on, the DDC is always null.
+    cmove           ct0, cnull
+    cspecialrw      cnull, ddc, ct0 # Write DDC.
+
+    # Set up mtcc and jump to main in purecap mode.
+    cspecialrw      ct0, pcc, cnull # Get PCC.
+
+    li              t1, 1
+    csetflags       ct0, ct0, t1     # set cap mode on
+
+    la              t1, freertos_risc_v_trap_handler
+    csetoffset      ct0, ct0, t1
+    cspecialrw      cnull, mtcc, ct0 # Write MTCC.
+
+    la              t1, main
+    csetoffset      ct0, ct0, t1
+    cjalr           cra, ct0 # jump to main
+#else
     /* set stack pointer */
     la	sp, _stack
+#endif /* __CHERI_PURE_CAPABILITY__ */
 
 	j	main
 
@@ -159,3 +236,8 @@ fill_block:
     j		fill_block
 fb_end:
     ret
+.size boot, . - boot
+
+#ifdef __CHERI_PURE_CAPABILITY__
+.option capmode
+#endif /* __CHERI_PURE_CAPABILITY__ */

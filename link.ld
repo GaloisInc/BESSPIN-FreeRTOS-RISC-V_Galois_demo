@@ -145,6 +145,14 @@ SECTIONS {
 	   __data_end = .;
 	} > dmem
 
+      __cap_relocs : {
+           . = ALIGN(16);
+      } > dmem
+
+      .captable : {
+           . = ALIGN(16);
+      } > dmem
+
     .bss : {
        . = ALIGN(8);
        __bss_start = .;

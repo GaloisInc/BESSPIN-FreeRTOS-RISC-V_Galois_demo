@@ -37,6 +37,17 @@
 /* Bsp includes. */
 #include "bsp.h"
 
+#ifdef __CHERI_PURE_CAPABILITY__
+    #include <cheri_init_globals.h>
+    #include <cheri/cheri-utility.h>
+
+    void _start_purecap( void )
+    {
+        cheri_init_globals_3( __builtin_cheri_global_data_get(),
+                              __builtin_cheri_program_counter_get(),
+                              __builtin_cheri_global_data_get() );
+    }
+#endif /* __CHERI_PURE_CAPABILITY__ */
 /******************************************************************************
  * This project provides test applications for Galois P1 SSITH processor.
  */
