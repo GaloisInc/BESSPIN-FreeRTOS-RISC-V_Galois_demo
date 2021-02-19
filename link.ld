@@ -94,7 +94,7 @@ ENTRY(boot)
  * Define the sections, and where they are mapped in memory 
  ****************************************************************************/
 SECTIONS {
-   .uncached : {
+   .uncached (NOLOAD) : {
       . = ALIGN(64);
       *(.uncached);
 		*(.uncached.*);
@@ -122,7 +122,7 @@ SECTIONS {
        __rodata_end = .;
 	} > dmem
 
-	.sbss : {
+	.sbss (NOLOAD) : {
 	   __sbss_start = .;
 	   *(.sbss)
 	   *(.sbss.*)
@@ -153,7 +153,7 @@ SECTIONS {
            . = ALIGN(16);
       } > dmem
 
-    .bss : {
+    .bss (NOLOAD) : {
        . = ALIGN(8);
        __bss_start = .;
        *(.bss)
@@ -168,7 +168,7 @@ SECTIONS {
     * Stack is used by the ISR and the main() for initialization
     * Stack grows downwards
     */
-   .stack : {
+   .stack (NOLOAD) : {
        _stack_end = .;
        . += _STACK_SIZE;
        . = ALIGN(8);
@@ -179,7 +179,7 @@ SECTIONS {
     } > dmem
 
    /* Heap grows upwards */
-    .heap : {
+    .heap (NOLOAD) : {
        . = ALIGN(8);
        _heap = .;
        _heap_start = .;
