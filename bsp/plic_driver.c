@@ -3,6 +3,14 @@
 #include "plic_driver.h"
 #include <string.h>
 
+#include "bsp.h"
+
+#include <FreeRTOSConfig.h>
+
+#ifdef __CHERI_PURE_CAPABILITY__
+#include <cheri/cheri-utility.h>
+#endif /* __CHERI_PURE_CAPABILITY__ */
+
 // Note that there are no assertions or bounds checking on these
 // parameter values.
 static void volatile_memzero32(uint32_t *base, unsigned int size);
@@ -25,6 +33,15 @@ void PLIC_init(
 {
 
     this_plic->base_addr = base_addr;
+
+    #ifdef __CHERI_PURE_CAPABILITY__
+        this_plic->base_addr =
+            cheri_build_data_cap((ptraddr_t) base_addr,
+                PLIC_BASE_SIZE,
+                __CHERI_CAP_PERMISSION_PERMIT_LOAD__ |
+                __CHERI_CAP_PERMISSION_PERMIT_STORE__);
+    #endif
+
     this_plic->num_sources = num_sources;
     this_plic->num_priorities = num_priorities;
 

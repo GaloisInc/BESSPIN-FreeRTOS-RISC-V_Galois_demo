@@ -30,6 +30,7 @@
  * PLIC defines
  */
 #define PLIC_BASE_ADDR (0xC000000ULL)
+#define PLIC_BASE_SIZE 0x400000
 
 #define PLIC_NUM_SOURCES 16
 #define PLIC_NUM_PRIORITIES 16
