@@ -10,13 +10,27 @@ TARGET=$(CCPATH)riscv64-unknown-elf
 
 XLEN?=32
 
+ifeq ($(CHERI),1)
+	USE_CLANG		= yes
+endif
+
 ifeq ($(XLEN),64)
+ifeq ($(CHERI),1)
+	ARCH 		= -march=rv64imacxcheri
+	ABI 		= -mabi=l64pc128
+else
 	ARCH 		= -march=rv64imac
 	ABI 		= -mabi=lp64
+endif
 	CLANG_ARCH  = riscv64
+else
+ifeq ($(CHERI),1)
+	ARCH 		= -march=rv32imxcheri
+	ABI 		= -mabi=il32pc64
 else
 	ARCH 		= -march=rv32im
 	ABI 		= -mabi=ilp32
+endif
 	CLANG_ARCH  = riscv32
 endif
 
@@ -91,7 +105,12 @@ FREERTOS_SRC = \
 APP_SOURCE_DIR	= ../Common/Minimal
 
 PORT_SRC = $(FREERTOS_SOURCE_DIR)/portable/GCC/RISC-V/port.c
-PORT_ASM = $(FREERTOS_SOURCE_DIR)/portable/GCC/RISC-V/portASM.S
+
+ifeq ($(CHERI),1)
+	PORT_ASM = $(FREERTOS_SOURCE_DIR)/portable/GCC/RISC-V/chip_specific_extensions/CHERI/portASM.S
+else
+	PORT_ASM = $(FREERTOS_SOURCE_DIR)/portable/GCC/RISC-V/portASM.S
+endif
 
 INCLUDES = \
 	-I. \
@@ -203,6 +222,14 @@ FREERTOS_IP_DEMO_SRC = \
 	demo/SimpleUDPClientAndServer.c \
 	demo/TCPEchoClient_SingleTasks.c \
 	demo/SimpleTCPEchoServer.c
+
+ifeq ($(CHERI),1)
+	FREERTOS_CHERI_SRC = ../../../FreeRTOS-Labs/FreeRTOS-Labs/Source/FreeRTOS-libcheri/cheri/cheri-riscv.c
+	FREERTOS_CHERI_INCLUDE = -I../../../FreeRTOS-Labs/FreeRTOS-Labs/Source/FreeRTOS-libcheri/include
+
+	FREERTOS_SRC += $(FREERTOS_CHERI_SRC)
+	INCLUDES += $(FREERTOS_CHERI_INCLUDE)
+endif
 
 ifeq ($(PROG),main_blinky)
 	CFLAGS += -DmainDEMO_TYPE=1
