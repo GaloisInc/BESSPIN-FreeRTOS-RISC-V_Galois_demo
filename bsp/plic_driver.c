@@ -1,3 +1,8 @@
+ /*
+ * Copyright (c) 2021 Hesham Almatary <Hesham.Almatary@cl.cam.ac.uk>
+ * See LICENSE_CHERI
+ */
+
 // Modified SIFI driver.
 // TODO: add a proper license
 #include "plic_driver.h"

@@ -1,4 +1,7 @@
 /*
+    Copyright (c) 2021 Hesham Almatary <Hesham.Almatary@cl.cam.ac.uk>
+    See LICENSE_CHERI
+
     FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 

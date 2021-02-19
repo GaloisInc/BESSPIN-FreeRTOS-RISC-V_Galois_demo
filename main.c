@@ -1,4 +1,7 @@
 /*
+ * Copyright (c) 2021 Hesham Almatary <Hesham.Almatary@cl.cam.ac.uk>
+ * See LICENSE_CHERI
+ *
  * FreeRTOS Kernel V10.1.1
  * Copyright (C) 2018 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
