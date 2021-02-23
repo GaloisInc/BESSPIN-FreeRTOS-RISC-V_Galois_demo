@@ -6,7 +6,7 @@
 #include "semphr.h"
 
 #define IIC0_PRINT_STATS 0
-#define IIC_RESET_ERROR_THRESHOLD 5
+#define IIC_RESET_ERROR_THRESHOLD 3
 
 /* Device driver for IIC peripheral */
 struct IicDriver
@@ -22,7 +22,7 @@ struct IicDriver
 
 enum iic_error {
     IIC_TIMEOUT = -1,
-    IIC_SLAVE_NO_ACK = -2,
+    IIC_SLAVE_NO_ACK = -2, /* Slave did not ACK (had error) 0x00000004 */
     IIC_MASTER_SEND_ERROR = -3,
     IIC_MASTER_RECV_ERROR = -4,
     IIC_BUS_IS_BUSY = -5,
