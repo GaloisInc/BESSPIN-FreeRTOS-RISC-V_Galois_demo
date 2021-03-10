@@ -44,21 +44,41 @@ connected. */
 
 #define ipconfigBUFFER_PADDING 14
 
-/* Set to 1 to print out debug messages.  If ipconfigHAS_DEBUG_PRINTF is set to
-1 then FreeRTOS_debug_printf should be defined to the function used to print
-out the debugging messages. */
-#define ipconfigHAS_DEBUG_PRINTF	0
-#if( ipconfigHAS_DEBUG_PRINTF == 1 )
-	#define FreeRTOS_debug_printf(X)	printf X
+#ifdef FETT_APPS
+    /* APPLICATION SPECIFIC CONFIGURATION
+       ----------------------------------
+       We currently offer two options here
+       1. The FETT application
+       2. Anything else
+
+       For the FETT application, we load addition macro definitions from fettFreeRTOSIPConfig.h
+
+       For anything else, we set sensible default values for the following defines
+        configUSE_DNS
+        ipconfigUSE_DHCP
+        ipconfigMAXIMUM_DISCOVER_TX_PERIOD
+    */
+    #include "fettFreeRTOSIPConfig.h"
 #endif
 
-/* Set to 1 to print out non debugging messages, for example the output of the
-FreeRTOS_netstat() command, and ping replies.  If ipconfigHAS_PRINTF is set to 1
-then FreeRTOS_printf should be set to the function used to print out the
-messages. */
-#define ipconfigHAS_PRINTF			1
+#ifndef FETT_APPS
+    /* Set to 1 to print out debug messages.  If ipconfigHAS_DEBUG_PRINTF is set to
+    1 then FreeRTOS_debug_printf should be defined to the function used to print
+    out the debugging messages. */
+    #define ipconfigHAS_DEBUG_PRINTF	0
+
+    /* Set to 1 to print out non debugging messages, for example the output of the
+    FreeRTOS_netstat() command, and ping replies.  If ipconfigHAS_PRINTF is set to 1
+    then FreeRTOS_printf should be set to the function used to print out the
+    messages. */
+    #define ipconfigHAS_PRINTF			1
+#endif //FETT_APPS
+
+#if( ipconfigHAS_DEBUG_PRINTF == 1 )
+    #define FreeRTOS_debug_printf(X)    printf X
+#endif
 #if( ipconfigHAS_PRINTF == 1 )
-	#define FreeRTOS_printf(X)			printf X
+    #define FreeRTOS_printf(X)          printf X
 #endif
 
 /* Define the byte order of the target MCU (the MCU FreeRTOS+TCP is executing
@@ -371,23 +391,7 @@ to 1 but a DNS server cannot be contacted.*/
 #define ipconfigCHECK_IP_QUEUE_SPACE 1
 #define ipconfigTCP_IP_SANITY 1
 
-#ifdef FETT_APPS
-    /* APPLICATION SPECIFIC CONFIGURATION
-       ----------------------------------
-       We currently offer two options here
-       1. The FETT application
-       2. Anything else
-
-       For the FETT application, we load addition macro definitions from fettFreeRTOSIPConfig.h
-
-       For anything else, we set sensible default values for the following defines
-        configUSE_DNS
-        ipconfigUSE_DHCP
-        ipconfigMAXIMUM_DISCOVER_TX_PERIOD
-    */
-    #include "fettFreeRTOSIPConfig.h"
-#else
-
+#ifndef FETT_APPS
     /* If ipconfigUSE_DHCP is 1 then FreeRTOS+TCP will attempt to retrieve an IP
     address, netmask, DNS server address and gateway address from a DHCP server.  If
     ipconfigUSE_DHCP is 0 then FreeRTOS+TCP will use a static IP address.  The
