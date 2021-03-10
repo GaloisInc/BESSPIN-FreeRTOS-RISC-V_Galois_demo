@@ -2275,6 +2275,8 @@ DtlsMsg* DtlsMsgInsert(DtlsMsg* head, DtlsMsg* item)
 
 #ifndef NO_OLD_TLS
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Waggregate-return"
 ProtocolVersion MakeSSLv3(void)
 {
     ProtocolVersion pv;
@@ -2283,7 +2285,7 @@ ProtocolVersion MakeSSLv3(void)
 
     return pv;
 }
-
+#pragma GCC diagnostic pop
 #endif /* NO_OLD_TLS */
 
 

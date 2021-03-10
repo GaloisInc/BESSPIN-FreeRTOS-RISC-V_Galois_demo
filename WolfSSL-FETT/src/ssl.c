@@ -1726,7 +1726,8 @@ int wolfSSL_SetVersion(WOLFSSL* ssl, int version)
         WOLFSSL_MSG("Bad function argument");
         return BAD_FUNC_ARG;
     }
-
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Waggregate-return"
     switch (version) {
 #ifndef NO_OLD_TLS
         case WOLFSSL_SSLV3:
@@ -1753,6 +1754,7 @@ int wolfSSL_SetVersion(WOLFSSL* ssl, int version)
             WOLFSSL_MSG("Bad function argument");
             return BAD_FUNC_ARG;
     }
+    #pragma GCC diagnostic pop
 
     #ifdef NO_RSA
         haveRSA = 0;
@@ -5111,8 +5113,11 @@ int wolfSSL_dtls_got_timeout(WOLFSSL* ssl)
                               (WOLFSSL_METHOD*) XMALLOC(sizeof(WOLFSSL_METHOD), 0,
                                                        DYNAMIC_TYPE_METHOD);
         WOLFSSL_ENTER("SSLv3_client_method");
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Waggregate-return"
         if (method)
             InitSSL_Method(method, MakeSSLv3());
+        #pragma GCC diagnostic pop
         return method;
     }
     #endif
@@ -5399,10 +5404,13 @@ int wolfSSL_dtls_got_timeout(WOLFSSL* ssl)
                               (WOLFSSL_METHOD*) XMALLOC(sizeof(WOLFSSL_METHOD), 0,
                                                        DYNAMIC_TYPE_METHOD);
         WOLFSSL_ENTER("SSLv3_server_method");
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Waggregate-return"
         if (method) {
             InitSSL_Method(method, MakeSSLv3());
             method->side = WOLFSSL_SERVER_END;
         }
+        #pragma GCC diagnostic pop
         return method;
     }
     #endif
