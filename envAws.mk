@@ -1,0 +1,12 @@
+$(info Including AWS Config)
+CFLAGS += \
+	-DBSP_USE_UART1=0 \
+	-DBSP_USE_DMA=0 \
+	-DBSP_USE_ETHERNET=0 \
+	-DBSP_USE_IIC0=0 \
+	-DBSP_USE_SPI1=0 \
+	-DBSP_USE_GPIO=0 \
+	-DBSP_USE_ICENET=1 \
+	-DBSP_USE_ICEBLK=1
+
+configCPU_CLOCK_HZ="((uint32_t)(100000000))"
