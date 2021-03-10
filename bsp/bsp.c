@@ -116,9 +116,9 @@ void external_interrupt_handler(HANDLER_DATATYPE cause)
     void exception_handler(HANDLER_DATATYPE mcause, HANDLER_DATATYPE mepc, HANDLER_DATATYPE mstatus)
     {
         printf("LMCO SSITH CPU Pipeline exception\n");
-        printf("mcause: 0x%X\n", mcause);
-        printf("mepc: 0x%X\n", mepc);
-        printf("mstatus: 0x%X\n", mstatus);
+        printf("mcause: 0x%lX\n", (long unsigned int) mcause);
+        printf("mepc: 0x%lX\n", (long unsigned int) mepc);
+        printf("mstatus: 0x%lX\n", (long unsigned int) mstatus);
 
         #ifndef NETBOOT
             /* Signal other tasks to terminate cleanly */
