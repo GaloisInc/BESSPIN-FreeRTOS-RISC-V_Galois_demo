@@ -57,7 +57,7 @@ typedef XCONCAT3(Elf, __riscv_xlen, _Phdr) Elf_Phdr;
 
 struct tftp_client_state
 {
-	Socket_t *sock;
+	Socket_t sock;
 	struct freertos_sockaddr dstaddr;
 	socklen_t dstaddrlen;
 	char *winbuf;
