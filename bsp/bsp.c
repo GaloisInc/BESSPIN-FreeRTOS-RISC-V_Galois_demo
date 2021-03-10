@@ -1,9 +1,25 @@
 #include "bsp.h"
-#include "uart.h"
-#include "iic.h"
-#include "gpio.h"
-#include "spi.h"
 #include "plic_driver.h"
+
+#if BSP_USE_UART0 || BSP_USE_UART1
+#include "uart.h"
+#endif
+
+#if BSP_USE_IIC0
+#include "iic.h"
+#endif
+
+#if BSP_USE_GPIO
+#include "gpio.h"
+#endif
+
+#if BSP_USE_SPI1
+#include "spi.h"
+#endif
+
+#if BSP_USE_ICEBLK
+#include "iceblk.h"
+#endif
 
 // to communicate with the debugger in spike
 volatile uint64_t tohost __attribute__((aligned(64)));
@@ -30,12 +46,21 @@ void prvSetupHardware(void)
     uart1_init();
 #endif
 
-
 #if BSP_USE_ETHERNET
     configASSERT(BSP_USE_DMA);
     PLIC_set_priority(&Plic, PLIC_SOURCE_ETH, PLIC_PRIORITY_ETH);
     PLIC_set_priority(&Plic, PLIC_SOURCE_DMA_MM2S, PLIC_PRIORITY_DMA_MM2S);
     PLIC_set_priority(&Plic, PLIC_SOURCE_DMA_S2MM, PLIC_PRIORITY_DMA_S2MM);
+#endif
+
+#if BSP_USE_ICENET
+    PLIC_set_priority(&Plic, PLIC_SOURCE_ICEETH_RX, PLIC_PRIORITY_ETH);
+    PLIC_set_priority(&Plic, PLIC_SOURCE_ICEETH_TX, PLIC_PRIORITY_ETH);
+#endif
+
+#if BSP_USE_ICEBLK
+    PLIC_set_priority(&Plic, PLIC_SOURCE_ICEBLK, PLIC_PRIORITY_ICEBLK);
+    iceblk_init();
 #endif
 
 #if BSP_USE_IIC0
