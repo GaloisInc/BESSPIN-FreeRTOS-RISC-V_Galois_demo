@@ -49,8 +49,8 @@ int iceblk_setup(IceblkDev *port)
 	port->qrunning = 1;
 
 	printf("Iceblk: disk loaded; "
-		   "%u sectors, %u tags, %u max request length\n",
-		   port->nsectors, port->ntags, port->max_req_len);
+		   "%lu sectors, %lu tags, %lu max request length\n",
+		   (long unsigned int) port->nsectors, (long unsigned int) port->ntags, (long unsigned int) port->max_req_len);
 
 	configASSERT(port->max_req_len <= ICEBLK_DEFAULT_MAX_REQUEST_LENGTH);
 
