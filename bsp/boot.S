@@ -86,6 +86,11 @@ boot:
     sw              a1, xDtbAddr, t6
 #endif
 #endif
+#ifdef ENABLE_MORPHEUS
+    li t0, 0x63000024
+    lw t0, 0(t0)
+    set_iv x0, t0, x0
+#endif
     j _mstart
 
 _mstart:
@@ -158,4 +163,8 @@ fill_block:
     addi	a0, a0, 4
     j		fill_block
 fb_end:
+#if defined(ENABLE_MORPHEUS)
+    jalrcp x0, 0(ra)
+#else
     ret
+#endif
