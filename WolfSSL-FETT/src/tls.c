@@ -372,6 +372,8 @@ int BuildTlsFinished(WOLFSSL* ssl, Hashes* hashes, const byte* sender)
                IsAtLeastTLSv1_2(ssl), ssl->specs.mac_algorithm);
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Waggregate-return"
 
 #ifndef NO_OLD_TLS
 
@@ -405,6 +407,8 @@ ProtocolVersion MakeTLSv1_2(void)
 
     return pv;
 }
+
+#pragma GCC diagnostic pop
 
 
 static const byte master_label[MASTER_LABEL_SZ + 1] = "master secret";
@@ -2306,6 +2310,8 @@ int TLSX_Parse(WOLFSSL* ssl, byte* input, word16 length, byte isRequest,
 
 #endif
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Waggregate-return"
 
 #ifndef NO_WOLFSSL_CLIENT
 
@@ -2443,4 +2449,6 @@ int TLSX_Parse(WOLFSSL* ssl, byte* input, word16 length, byte isRequest,
 
 #endif /* NO_WOLFSSL_SERVER */
 #endif /* NO_TLS */
+
+#pragma GCC diagnostic pop
 
