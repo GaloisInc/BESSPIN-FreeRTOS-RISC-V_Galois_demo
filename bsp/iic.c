@@ -98,6 +98,7 @@ __attribute__((unused)) static void iic_init(struct IicDriver *Iic, uint8_t devi
  * the peripheral is started
  * NOTE: iic_stop might not help with the BUY_IS_BUSY condition (se XIic_Stop documentation)
  */
+#pragma GCC diagnostic ignored "-Wunused-function"
 static void iic_stop(struct IicDriver *Iic, uint8_t plic_source_id)
 {
     PLIC_unregister_interrupt_handler(&Plic, plic_source_id);
