@@ -85,11 +85,14 @@ void external_interrupt_handler(HANDLER_DATATYPE cause);
 #define XPAR_UARTNS550_0_CLOCK_HZ configPERIPH_CLOCK_HZ
 
 
+#ifndef BSP_USE_UART1
 #if __riscv_xlen == 64
 #define BSP_USE_UART1 0
 #else
 #define BSP_USE_UART1 1
 #endif
+#endif /* #ifndef BSP_USE_UART1 */
+
 #define XPAR_UARTNS550_1_DEVICE_ID 1
 #define XPAR_UARTNS550_1_BAUD_RATE XPAR_DEFAULT_BAUD_RATE
 #define XPAR_UARTNS550_1_BASEADDR (0x62340000ULL)
@@ -99,7 +102,10 @@ void external_interrupt_handler(HANDLER_DATATYPE cause);
 /**
  * DMA defines
  */
+#ifndef BSP_USE_DMA
 #define BSP_USE_DMA 1
+#endif
+
 #define XPAR_XAXIDMA_NUM_INSTANCES 1
 #define XPAR_AXI_DMA 1
 
@@ -131,7 +137,10 @@ void external_interrupt_handler(HANDLER_DATATYPE cause);
 /**
  * Ethernet defines
  */
+#ifndef BSP_USE_ETHERNET
 #define BSP_USE_ETHERNET 1
+#endif
+
 #define XPAR_XAXIETHERNET_NUM_INSTANCES 1
 
 #define XPAR_AXIETHERNET_0_PHYADDR 0x03
@@ -215,11 +224,14 @@ void external_interrupt_handler(HANDLER_DATATYPE cause);
 #define XPAR_SPI_0_USE_STARTUP 0
 
 /* SPI1 is used for SD card (polled mode), and can be used for LCD screen (interrupt mode)*/ 
+#ifndef BSP_USE_SPI1
 #if __riscv_xlen == 64
 #define BSP_USE_SPI1 0
 #else
 #define BSP_USE_SPI1 1
 #endif
+#endif /* ifndef BSP_USE_SPI1 */
+
 #define XPAR_SPI_1_DEVICE_ID 1
 #define XPAR_SPI_1_BASEADDR (0x62320000ULL)
 #define XPAR_SPI_1_FIFO_EXIST 0
@@ -235,11 +247,13 @@ void external_interrupt_handler(HANDLER_DATATYPE cause);
 /**
  * GPIO defines
  */
+#ifndef BSP_USE_GPIO
 #if __riscv_xlen == 64
 #define BSP_USE_GPIO 0
 #else
 #define BSP_USE_GPIO 1
 #endif
+#endif /* BSP_USE_GPIO */
 #define XPAR_XGPIO_NUM_INSTANCES 1
 #define XPAR_GPIO_0_DEVICE_ID 0
 #define XPAR_GPIO_0_BASEADDR 0x62330000ULL
@@ -255,5 +269,27 @@ void external_interrupt_handler(HANDLER_DATATYPE cause);
 
 #define sleep(_SECS) vTaskDelay(pdMS_TO_TICKS(_SECS * 1000));
 #define msleep(_MSECS) vTaskDelay(pdMS_TO_TICKS(_MSECS));
+
+/**
+ * Icenet driver defines
+ */
+#ifndef BSP_USE_ICENET
+#define BSP_USE_ICENET 0
+#endif
+
+// Ice Net configuration
+#define PLIC_SOURCE_ICEETH_TX 4
+#define PLIC_SOURCE_ICEETH_RX 5
+#define ICENET_BASEADDR 0x62100000ULL
+/**
+ * Iceblk driver defines
+ */
+#ifndef BSP_USE_ICEBLK
+#define BSP_USE_ICEBLK 0
+#endif
+
+#define ICEBLK_BASEADDR 0x40015000ULL
+#define PLIC_SOURCE_ICEBLK 2
+#define PLIC_PRIORITY_ICEBLK 0x3
 
 #endif /* RISCV_P1_BSP_H */
