@@ -5,7 +5,7 @@
 
 -include BuildEnvironment.mk
 
-FREERTOS_DIR = ../..
+FREERTOS_DIR = ../../..
 FREERTOS_SOURCE_DIR = $(FREERTOS_DIR)/Source
 
 FREERTOS_SRC = \
