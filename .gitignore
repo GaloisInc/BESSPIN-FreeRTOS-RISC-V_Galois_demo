@@ -2,3 +2,5 @@
 doc/*
 *.elf
 *.asm
+*.d
+Qemu-sifive_e-FreedomStudio/build/main_fett.map
