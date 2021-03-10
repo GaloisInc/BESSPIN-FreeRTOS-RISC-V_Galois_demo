@@ -110,70 +110,78 @@ CFLAGS = $(WARNINGS) $(C_WARNINGS) $(INCLUDES)
 DEMO_SRC = main.c \
 	demo/$(PROG).c
 
-ifneq ($(BSP),vcu118)
-	$(error Unsupported Board Support Package (BSP) selected: $(BSP))
-endif
-
 APP_SRC = \
 	bsp/bsp.c \
 	bsp/plic_driver.c \
-	bsp/syscalls.c \
-	bsp/uart.c \
-	bsp/iic.c \
-	bsp/gpio.c \
-	bsp/spi.c \
-	bsp/xilinx/uartns550/xuartns550.c \
-	bsp/xilinx/uartns550/xuartns550_g.c \
-	bsp/xilinx/uartns550/xuartns550_sinit.c \
-	bsp/xilinx/uartns550/xuartns550_selftest.c \
-	bsp/xilinx/uartns550/xuartns550_stats.c \
-	bsp/xilinx/uartns550/xuartns550_options.c \
-	bsp/xilinx/uartns550/xuartns550_intr.c \
-	bsp/xilinx/uartns550/xuartns550_l.c \
-	bsp/xilinx/axidma/xaxidma_bd.c \
-	bsp/xilinx/axidma/xaxidma_bdring.c \
-	bsp/xilinx/axidma/xaxidma.c \
-	bsp/xilinx/axidma/xaxidma_selftest.c \
-	bsp/xilinx/axidma/xaxidma_g.c \
-	bsp/xilinx/axidma/xaxidma_sinit.c \
-	bsp/xilinx/axiethernet/xaxiethernet.c \
-	bsp/xilinx/axiethernet/xaxiethernet_control.c \
-	bsp/xilinx/axiethernet/xaxiethernet_g.c \
-	bsp/xilinx/axiethernet/xaxiethernet_sinit.c \
-	bsp/xilinx/iic/xiic.c \
-	bsp/xilinx/iic/xiic_g.c \
-	bsp/xilinx/iic/xiic_l.c \
-	bsp/xilinx/iic/xiic_sinit.c \
-	bsp/xilinx/iic/xiic_selftest.c \
-	bsp/xilinx/iic/xiic_master.c \
-	bsp/xilinx/iic/xiic_intr.c \
-	bsp/xilinx/iic/xiic_stats.c \
-	bsp/xilinx/spi/xspi.c \
-	bsp/xilinx/spi/xspi_g.c \
-	bsp/xilinx/spi/xspi_sinit.c \
-	bsp/xilinx/spi/xspi_selftest.c \
-	bsp/xilinx/spi/xspi_options.c \
-	bsp/xilinx/gpio/xgpio.c \
-	bsp/xilinx/gpio/xgpio_extra.c \
-	bsp/xilinx/gpio/xgpio_g.c \
-	bsp/xilinx/gpio/xgpio_intr.c \
-	bsp/xilinx/gpio/xgpio_selftest.c \
-	bsp/xilinx/gpio/xgpio_sinit.c \
-	bsp/xilinx/common/xbasic_types.c \
-	bsp/xilinx/common/xil_io.c \
-	bsp/xilinx/common/xil_assert.c
+	bsp/syscalls.c
+ifeq ($(BSP),vcu118)
+	BSP_SRC = \
+		bsp/uart.c \
+		bsp/iic.c \
+		bsp/gpio.c \
+		bsp/spi.c \
+		bsp/xilinx/uartns550/xuartns550.c \
+		bsp/xilinx/uartns550/xuartns550_g.c \
+		bsp/xilinx/uartns550/xuartns550_sinit.c \
+		bsp/xilinx/uartns550/xuartns550_selftest.c \
+		bsp/xilinx/uartns550/xuartns550_stats.c \
+		bsp/xilinx/uartns550/xuartns550_options.c \
+		bsp/xilinx/uartns550/xuartns550_intr.c \
+		bsp/xilinx/uartns550/xuartns550_l.c \
+		bsp/xilinx/axidma/xaxidma_bd.c \
+		bsp/xilinx/axidma/xaxidma_bdring.c \
+		bsp/xilinx/axidma/xaxidma.c \
+		bsp/xilinx/axidma/xaxidma_selftest.c \
+		bsp/xilinx/axidma/xaxidma_g.c \
+		bsp/xilinx/axidma/xaxidma_sinit.c \
+		bsp/xilinx/axiethernet/xaxiethernet.c \
+		bsp/xilinx/axiethernet/xaxiethernet_control.c \
+		bsp/xilinx/axiethernet/xaxiethernet_g.c \
+		bsp/xilinx/axiethernet/xaxiethernet_sinit.c \
+		bsp/xilinx/iic/xiic.c \
+		bsp/xilinx/iic/xiic_g.c \
+		bsp/xilinx/iic/xiic_l.c \
+		bsp/xilinx/iic/xiic_sinit.c \
+		bsp/xilinx/iic/xiic_selftest.c \
+		bsp/xilinx/iic/xiic_master.c \
+		bsp/xilinx/iic/xiic_intr.c \
+		bsp/xilinx/iic/xiic_stats.c \
+		bsp/xilinx/spi/xspi.c \
+		bsp/xilinx/spi/xspi_g.c \
+		bsp/xilinx/spi/xspi_sinit.c \
+		bsp/xilinx/spi/xspi_selftest.c \
+		bsp/xilinx/spi/xspi_options.c \
+		bsp/xilinx/gpio/xgpio.c \
+		bsp/xilinx/gpio/xgpio_extra.c \
+		bsp/xilinx/gpio/xgpio_g.c \
+		bsp/xilinx/gpio/xgpio_intr.c \
+		bsp/xilinx/gpio/xgpio_selftest.c \
+		bsp/xilinx/gpio/xgpio_sinit.c \
+		bsp/xilinx/common/xbasic_types.c \
+		bsp/xilinx/common/xil_io.c \
+		bsp/xilinx/common/xil_assert.c
+	INCLUDES += \
+		-I./bsp/xilinx \
+		-I./bsp/xilinx/common \
+		-I./bsp/xilinx/axidma \
+		-I./bsp/xilinx/axiethernet \
+		-I./bsp/xilinx/uartns550 \
+		-I./bsp/xilinx/iic \
+		-I./bsp/xilinx/spi \
+		-I./bsp/xilinx/gpio
+else
+ifeq ($(BSP),awsf1)
+	BSP_SRC = \
+		bsp/uart_sifive.c \
+		bsp/icenet.c \
+		bsp/iceblk.c
+	include envAws.mk
+else 
+$(error unknown Board Support Package (BSP) selected: $(BSP))
+endif
+endif
 
-INCLUDES += \
-	-I. \
-	-I./bsp \
-	-I./bsp/xilinx \
-	-I./bsp/xilinx/common \
-	-I./bsp/xilinx/axidma \
-	-I./bsp/xilinx/axiethernet \
-	-I./bsp/xilinx/uartns550 \
-	-I./bsp/xilinx/iic \
-	-I./bsp/xilinx/spi \
-	-I./bsp/xilinx/gpio \
+APP_SRC += $(BSP_SRC)
 
 ASFLAGS  += -g $(ARCH) $(ABI)  -Wa,-Ilegacy \
 	-I$(FREERTOS_SOURCE_DIR)/portable/GCC/RISC-V/chip_specific_extensions/RV32I_CLINT_no_extensions \
@@ -190,9 +198,14 @@ FREERTOS_IP_SRC = \
 	$(FREERTOS_TCP_SOURCE_DIR)/FreeRTOS_TCP_WIN.c \
 	$(FREERTOS_TCP_SOURCE_DIR)/FreeRTOS_Stream_Buffer.c \
 	$(FREERTOS_TCP_SOURCE_DIR)/portable/BufferManagement/BufferAllocation_2.c \
-	$(FREERTOS_TCP_SOURCE_DIR)/portable/NetworkInterface/RISC-V/riscv_hal_eth.c \
 	$(FREERTOS_TCP_SOURCE_DIR)/portable/NetworkInterface/RISC-V/NetworkInterface.c \
 	bsp/rand.c
+
+ifeq ($(BSP), awsf1)
+FREERTOS_IP_SRC += $(FREERTOS_TCP_SOURCE_DIR)/portable/NetworkInterface/RISC-V/riscv_icenet_eth.c 
+else
+FREERTOS_IP_SRC += $(FREERTOS_TCP_SOURCE_DIR)/portable/NetworkInterface/RISC-V/riscv_hal_eth.c 
+endif
 
 FREERTOS_IP_INCLUDE = \
 	-I$(FREERTOS_TCP_SOURCE_DIR) \
@@ -236,7 +249,6 @@ ifeq ($(PROG),main_iic)
 else
 ifeq ($(PROG),main_gpio)
 	CFLAGS += -DmainDEMO_TYPE=4
-	INCLUDES += -I./demo
 else
 ifeq ($(PROG),main_tcp)
 	CFLAGS += -DmainDEMO_TYPE=5
@@ -274,14 +286,24 @@ else
 ifeq ($(PROG),main_sd)
 	CFLAGS += -DmainDEMO_TYPE=6
 	CPPLAGS += -DmainDEMO_TYPE=6
+	USE_RTC_CLOCK ?= 0
+
+ifeq ($(BSP),awsf1)
+	DEMO_SRC += FatFs/source/diskio.c \
+			 	FatFs/source/ff.c \
+				 FatFs/source/ffsystem.c \
+				 FatFs/source/ffunicode.c \
+			 	FatFs/source/ff_demo.c
+	INCLUDES += -I./FatFs/source
+else
 	CPP_SRC += SD/src/SD.cpp \
 			   SD/src/File.cpp \
 			   SD/src/utility/Sd2Card.cpp \
 			   SD/src/utility/SdFile.cpp \
 			   SD/src/utility/SdVolume.cpp \
 			   SD/src/SDLib.cpp
-SD_EXAMPLE ?= CardInfo
-USE_RTC_CLOCK ?= 0
+	INCLUDES += -I./SD/src
+	SD_EXAMPLE ?= CardInfo
 $(info SD_EXAMPLE=${SD_EXAMPLE})
 ifeq ($(SD_EXAMPLE),ReadWrite)
 	CPP_SRC += SD/examples/SdDemo_ReadWrite.cpp
@@ -300,8 +322,8 @@ endif
 endif
 endif
 endif
+endif
 
-	INCLUDES += -I./SD/src
 ifeq ($(USE_RTC_CLOCK),1)
 # Below includes for RTC clock (SD FAT time)
 	CFLAGS += -DUSE_RTC_CLOCK=1
