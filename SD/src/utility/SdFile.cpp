@@ -460,14 +460,14 @@ uint8_t SdFile::open(SdFile* dirFile, const char* fileName, uint8_t oflag) {
   memcpy(p->name, dname, 11);
 
   // set timestamps
-  if (dateTime_) {
+  #if USE_RTC_CLOCK
     // call user function
     dateTime_(&p->creationDate, &p->creationTime);
-  } else {
+  #else
     // use default date/time
     p->creationDate = FAT_DEFAULT_DATE;
     p->creationTime = FAT_DEFAULT_TIME;
-  }
+  #endif
   p->lastAccessDate = p->creationDate;
   p->lastWriteDate = p->creationDate;
   p->lastWriteTime = p->creationTime;
@@ -990,10 +990,10 @@ uint8_t SdFile::sync(void) {
     d->firstClusterHigh = firstCluster_ >> 16;
 
     // set modify time if user supplied a callback date/time function
-    if (dateTime_) {
+    #if USE_RTC_CLOCK
       dateTime_(&d->lastWriteDate, &d->lastWriteTime);
       d->lastAccessDate = d->lastWriteDate;
-    }
+    #endif
     // clear directory dirty
     flags_ &= ~F_FILE_DIR_DIRTY;
   }
