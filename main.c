@@ -75,7 +75,6 @@ extern void main_fett(void);
 #undef configGENERATE_RUN_TIME_STATS
 #pragma message "Demo type 13: Netboot"
 extern void main_netboot(void);
-
 #else
 #error "Unsupported demo type"
 #endif

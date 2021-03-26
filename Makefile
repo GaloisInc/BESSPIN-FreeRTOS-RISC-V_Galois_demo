@@ -359,7 +359,19 @@ ifeq ($(PROG),main_uart_malware)
 else
 ifeq ($(PROG),main_fett)
 	CFLAGS += -DmainDEMO_TYPE=12
+	ifeq ($(DEMO),cyberphys)
+	# Demo cyberphys
+	CFLAGS += -DFETT_APPS -DFREERTOS -DBSP_USE_IIC0 -DUSE_CURRENT_TIME
+	WERROR =
+	INCLUDES += $(FREERTOS_IP_INCLUDE) \
+		-I./cyberphys
+	FREERTOS_SRC += $(FREERTOS_IP_SRC)
+	DEMO_SRC += cyberphys/canlib.c \
+    	cyberphys/j1939.c
+	else
+	# regular FETT compilation
 	include $(INC_FETT_APPS)/envFett.mk
+	endif
 else
 ifeq ($(PROG),main_netboot)
 	CFLAGS += -DmainDEMO_TYPE=13 -DNETBOOT
