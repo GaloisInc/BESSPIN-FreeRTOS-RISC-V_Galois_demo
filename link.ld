@@ -1,4 +1,8 @@
 /*
+
+    Copyright (c) 2021 Hesham Almatary <Hesham.Almatary@cl.cam.ac.uk>
+    See LICENSE_CHERI
+
     FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
@@ -94,7 +98,7 @@ ENTRY(boot)
  * Define the sections, and where they are mapped in memory 
  ****************************************************************************/
 SECTIONS {
-   .uncached : {
+   .uncached (NOLOAD) : {
       . = ALIGN(64);
       *(.uncached);
 		*(.uncached.*);
@@ -122,7 +126,7 @@ SECTIONS {
        __rodata_end = .;
 	} > dmem
 
-	.sbss : {
+	.sbss (NOLOAD) : {
 	   __sbss_start = .;
 	   *(.sbss)
 	   *(.sbss.*)
@@ -145,7 +149,15 @@ SECTIONS {
 	   __data_end = .;
 	} > dmem
 
-    .bss : {
+      __cap_relocs : {
+           . = ALIGN(16);
+      } > dmem
+
+      .captable : {
+           . = ALIGN(16);
+      } > dmem
+
+    .bss (NOLOAD) : {
        . = ALIGN(8);
        __bss_start = .;
        *(.bss)
@@ -160,7 +172,7 @@ SECTIONS {
     * Stack is used by the ISR and the main() for initialization
     * Stack grows downwards
     */
-   .stack : {
+   .stack (NOLOAD) : {
        _stack_end = .;
        . += _STACK_SIZE;
        . = ALIGN(8);
@@ -171,7 +183,7 @@ SECTIONS {
     } > dmem
 
    /* Heap grows upwards */
-    .heap : {
+    .heap (NOLOAD) : {
        . = ALIGN(8);
        _heap = .;
        _heap_start = .;
