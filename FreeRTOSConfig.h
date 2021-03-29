@@ -180,8 +180,8 @@ header file. */
             ;                     \
     }
 
-#ifdef FETT_APPS
-    #include "fettFreeRTOSConfig.h"
+#ifdef BESSPIN_TOOL_SUITE
+    #include "besspinFreeRTOSConfig.h"
 #endif
 
 #endif /* FREERTOS_CONFIG_H */

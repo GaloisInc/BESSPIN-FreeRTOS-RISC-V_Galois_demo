@@ -70,7 +70,7 @@ typedef struct WOLFSSL_X509_CHAIN WOLFSSL_X509_CHAIN;
 typedef struct WOLFSSL_CERT_MANAGER WOLFSSL_CERT_MANAGER;
 typedef struct WOLFSSL_SOCKADDR     WOLFSSL_SOCKADDR;
 
-#ifdef FETT_APPS
+#ifdef BESSPIN_TOOL_SUITE
     #include "FreeRTOS_Sockets.h"
     typedef Socket_t WOLFSSL_FD;
 #else
@@ -929,7 +929,7 @@ WOLFSSL_API int wolfSSL_make_eap_keys(WOLFSSL*, void* key, unsigned int len,
                                                              const char* label);
 
 
-#ifndef FETT_APPS
+#ifndef BESSPIN_TOOL_SUITE
 #ifndef _WIN32
     #ifndef NO_WRITEV
         #ifdef __PPU
@@ -943,7 +943,7 @@ WOLFSSL_API int wolfSSL_make_eap_keys(WOLFSSL*, void* key, unsigned int len,
                                      int iovcnt);
     #endif
 #endif
-#endif //FETT_APPS
+#endif //BESSPIN_TOOL_SUITE
 
 
 #ifndef NO_CERTS

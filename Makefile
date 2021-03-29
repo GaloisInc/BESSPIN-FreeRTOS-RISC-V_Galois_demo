@@ -357,9 +357,9 @@ else
 ifeq ($(PROG),main_uart_malware)
 	CFLAGS += -DmainDEMO_TYPE=11
 else
-ifeq ($(PROG),main_fett)
+ifeq ($(PROG),main_besspin)
 	CFLAGS += -DmainDEMO_TYPE=12
-	include $(INC_FETT_APPS)/envFett.mk
+	include $(INC_BESSPIN_TOOL_SUITE)/envBesspin.mk
 else
 ifeq ($(PROG),main_netboot)
 	CFLAGS += -DmainDEMO_TYPE=13 -DNETBOOT
@@ -369,7 +369,7 @@ ifeq ($(PROG),main_netboot)
 else
 $(error unknown demo: $(PROG))
 endif # main_netboot
-endif # main_fett
+endif # main_besspin
 endif # main_uart_malware
 endif # main_rtc
 endif # main_uart

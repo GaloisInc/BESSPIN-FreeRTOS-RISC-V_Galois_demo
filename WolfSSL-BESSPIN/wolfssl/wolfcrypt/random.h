@@ -112,8 +112,8 @@ typedef struct RNG {
 
 WOLFSSL_LOCAL
 int wc_GenerateSeed(OS_Seed* os, byte* seed, word32 sz);
-#ifdef FETT_APPS
-    extern int fett_wc_GenerateSeed(uint8_t* seed, uint8_t sz);
+#ifdef BESSPIN_TOOL_SUITE
+    extern int besspin_wc_GenerateSeed(uint8_t* seed, uint8_t sz);
 #endif
 
 #if defined(HAVE_HASHDRBG) || defined(NO_RC4)

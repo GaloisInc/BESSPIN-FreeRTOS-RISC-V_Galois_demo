@@ -69,8 +69,8 @@ extern void main_peekpoke(void);
 extern void main_rtc(void);
 #elif mainDEMO_TYPE == 12
 #undef configGENERATE_RUN_TIME_STATS
-#pragma message "Demo type 12: FETT"
-extern void main_fett(void);
+#pragma message "Demo type 12: BESSPIN-Tool-Suite"
+extern void main_besspin(void);
 #elif mainDEMO_TYPE == 13
 #undef configGENERATE_RUN_TIME_STATS
 #pragma message "Demo type 13: Netboot"
@@ -190,7 +190,7 @@ int main(void)
 	}
 #elif mainDEMO_TYPE == 12
 	{
-		main_fett();
+		main_besspin();
 	}
 #elif mainDEMO_TYPE == 13
 	{

@@ -161,7 +161,7 @@ STATIC INLINE void XorWords(wolfssl_word* r, const wolfssl_word* a, word32 n)
 
 STATIC INLINE void xorbuf(void* buf, const void* mask, word32 count)
 {
-    #if defined(FETT_APPS) && (__riscv_xlen == 64)
+    #if defined(BESSPIN_TOOL_SUITE) && (__riscv_xlen == 64)
         if (((intptr_t)buf | (intptr_t)mask | count) % WOLFSSL_WORD_SIZE == 0)
     #else
         if (((wolfssl_word)buf | (wolfssl_word)mask | count) % WOLFSSL_WORD_SIZE == 0)

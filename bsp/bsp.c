@@ -109,8 +109,8 @@ void external_interrupt_handler(HANDLER_DATATYPE cause)
     #include <stdio.h>
 
     #ifndef NETBOOT
-        /* From fettMisc.c */
-        extern void exitFett (uint8_t exitCode);
+        /* From besspinMisc.c */
+        extern void exitBesspin (uint8_t exitCode);
     #endif
 
     void exception_handler(HANDLER_DATATYPE mcause, HANDLER_DATATYPE mepc, HANDLER_DATATYPE mstatus)
@@ -122,7 +122,7 @@ void external_interrupt_handler(HANDLER_DATATYPE cause)
 
         #ifndef NETBOOT
             /* Signal other tasks to terminate cleanly */
-            exitFett(1);
+            exitBesspin(1);
         #endif
 
         for (;;) ;;

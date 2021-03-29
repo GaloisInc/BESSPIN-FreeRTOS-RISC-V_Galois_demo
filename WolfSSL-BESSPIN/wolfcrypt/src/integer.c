@@ -306,9 +306,9 @@ int mp_grow (mp_int * a, int size)
      * in case the operation failed we don't want
      * to overwrite the dp member of a.
      */
-    #ifdef FETT_APPS
+    #ifdef BESSPIN_TOOL_SUITE
       //pass the original size too
-      tmp = OPT_CAST(mp_digit) XREALLOC (a->dp, sizeof (mp_digit) * size, (int*) USE_FETT_REALLOC,
+      tmp = OPT_CAST(mp_digit) XREALLOC (a->dp, sizeof (mp_digit) * size, (int*) USE_BESSPIN_REALLOC,
                                          sizeof (mp_digit) * a->alloc);
     #else
       tmp = OPT_CAST(mp_digit) XREALLOC (a->dp, sizeof (mp_digit) * size, 0,
