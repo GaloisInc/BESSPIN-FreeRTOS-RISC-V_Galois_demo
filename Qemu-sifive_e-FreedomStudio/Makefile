@@ -88,11 +88,11 @@ ifeq ($(PROJ_NAME),simple)
 		$(APP_SRC_DIR)/full_demo \
 		$(APP_SRC_DIR)
 else
-ifeq ($(PROJ_NAME),main_fett)
-	include $(INC_FETT_APPS)/envFett.mk
+ifeq ($(PROJ_NAME),main_besspin)
+	include $(INC_BESSPIN_TOOL_SUITE)/envBesspin.mk
 else
 $(error unknown proj: $(PROJ_NAME))
-endif #main_fett
+endif #main_besspin
 endif #simple
 
 APP_BUILD_DIR = $(BUILD_DIR)/app

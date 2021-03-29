@@ -22,8 +22,8 @@
 #include "stdint.h"
 #include "plic_driver.h"
 
-#ifdef FETT_APPS
-#include "fettUserConfig.h"
+#ifdef BESSPIN_TOOL_SUITE
+#include "besspinUserConfig.h"
 #endif
 
 /**

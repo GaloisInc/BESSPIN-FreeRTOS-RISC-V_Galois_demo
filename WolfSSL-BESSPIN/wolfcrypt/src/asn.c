@@ -184,7 +184,7 @@
     #ifndef HAVE_VALIDATE_DATE
         #define XVALIDATE_DATE(d, f, t) ValidateDate((d), (f), (t))
     #endif
-#elif defined(FETT_APPS)
+#elif defined(BESSPIN_TOOL_SUITE)
     #include <time.h>
     extern time_t XTIME(time_t *t);
     #define XGMTIME(c, t) gmtime((c))

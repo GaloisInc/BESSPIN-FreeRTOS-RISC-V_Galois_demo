@@ -56,7 +56,7 @@
 
 /* Uncomment next line if using FreeRTOS */
 /* #define FREERTOS */
-#include "fettWolfSSLsettings.h"
+#include "besspinWolfSSLsettings.h"
 
 /* Uncomment next line if using FreeRTOS Windows Simulator */
 /* #define FREERTOS_WINSIM */
