@@ -13,7 +13,13 @@
 
 /* Drivers */
 #include "bsp.h"
-#include "iic.h"
+
+#if BSP_USE_IIC0
+    #include "iic.h"
+#else
+    #define TRUE  1
+    #define FALSE 0
+#endif
 
 /* Canlib */
 #include "canspecs.h"
@@ -23,10 +29,6 @@
 /* FETT config */
 #include "fettFreeRTOSConfig.h"
 #include "fettFreeRTOSIPConfig.h"
-
-#if !(BSP_USE_IIC0)
-#error "One or more peripherals are nor present, this test cannot be run"
-#endif
 
 #define STRINGIZE_NX(A) #A
 #define STRINGIZE(A) STRINGIZE_NX(A)
@@ -250,7 +252,11 @@ void prvMainTask (void *pvParameters) {
     uint8_t dummy = 1;
     // Give the sensor time to power up
     vTaskDelay(SENSOR_POWER_UP_DELAY_MS);
-    int res = iic_transmit(&Iic0, TEENSY_I2C_ADDRESS, &dummy, 1);
+    #if BSP_USE_IIC0
+        int res = iic_transmit(&Iic0, TEENSY_I2C_ADDRESS, &dummy, 1);
+    #else
+        int res = 1;
+    #endif
     if (res == 1) {
         FreeRTOS_printf(("%s (Info)~ prvMainTask: iic_transmit OK\r\n", getCurrTime()));
     } else {
@@ -324,7 +330,7 @@ static void prvInfoTask(void *pvParameters)
         hz_sensor_task_old = hz_sensor_task;
 
         /* IIC bus info */
-#if IIC0_PRINT_STATS
+#if IIC0_PRINT_STATS && BSP_USE_IIC0
         iic0_print_stats();
 #endif
 
@@ -383,17 +389,26 @@ static void prvSensorTask(void *pvParameters)
 
     for (;;)
     {
-        returnval = iic_receive(&Iic0, TEENSY_I2C_ADDRESS, data, 5);
+        #if BSP_USE_IIC0
+            returnval = iic_receive(&Iic0, TEENSY_I2C_ADDRESS, data, 5);
+        #else
+            /* Default to neutral */
+            tmp_gear = 'N';
+            returnval = 1;
+        #endif
+
         vTaskDelay(pdMS_TO_TICKS(1));
         if (returnval < 1) {
             FreeRTOS_printf(("%s (prvSensorTask) iic_receive error: %i\r\n", getCurrTime(), returnval));
             vTaskDelay(pdMS_TO_TICKS(100));
             err_cnt++;
+            #if BSP_USE_IIC0
             if (err_cnt >= IIC_RESET_ERROR_THRESHOLD) {
                 FreeRTOS_printf(("%s (prvSensorTask) err_cnt == %i, resetting!\r\n", getCurrTime(), err_cnt));
                 iic0_master_reset();
                 err_cnt = 0;
             }
+            #endif
             continue;
         }
 
