@@ -357,7 +357,7 @@ else
 ifeq ($(PROG),main_uart_malware)
 	CFLAGS += -DmainDEMO_TYPE=11
 else
-ifeq ($(PROG),main_fett)
+ifeq ($(PROG),main_besspin)
 	CFLAGS += -DmainDEMO_TYPE=12
 	ifeq ($(DEMO),cyberphys)
 	# Demo cyberphys
@@ -369,8 +369,7 @@ ifeq ($(PROG),main_fett)
 	DEMO_SRC += cyberphys/canlib.c \
     	cyberphys/j1939.c
 	else
-	# regular FETT compilation
-	include $(INC_FETT_APPS)/envFett.mk
+	include $(INC_BESSPIN_TOOL_SUITE)/envBesspin.mk
 	endif
 else
 ifeq ($(PROG),main_netboot)
@@ -381,7 +380,7 @@ ifeq ($(PROG),main_netboot)
 else
 $(error unknown demo: $(PROG))
 endif # main_netboot
-endif # main_fett
+endif # main_besspin
 endif # main_uart_malware
 endif # main_rtc
 endif # main_uart

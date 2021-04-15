@@ -718,8 +718,8 @@ int wc_InitRng(RNG* rng)
         return MEMORY_E;
     }
 #endif
-    #ifdef FETT_APPS
-        ret = fett_wc_GenerateSeed((uint8_t*) key, 32);
+    #ifdef BESSPIN_TOOL_SUITE
+        ret = besspin_wc_GenerateSeed((uint8_t*) key, 32);
     #else
         ret = wc_GenerateSeed(&rng->seed, key, 32);
     #endif

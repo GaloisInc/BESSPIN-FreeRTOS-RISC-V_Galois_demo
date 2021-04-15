@@ -84,7 +84,7 @@
         #include <fcntl.h>
         #if !(defined(DEVKITPRO) || defined(HAVE_RTP_SYS) || defined(EBSNET)) \
             && !(defined(WOLFSSL_PICOTCP))
-            #ifdef FETT_APPS
+            #ifdef BESSPIN_TOOL_SUITE
                 #include "FreeRTOS_IP.h"
                 #include "FreeRTOS_Sockets.h"
             #else
@@ -193,7 +193,7 @@
     #define SEND_FUNCTION pico_send
     #define RECV_FUNCTION pico_recv
 #else
-    #ifdef FETT_APPS
+    #ifdef BESSPIN_TOOL_SUITE
         #define SEND_FUNCTION FreeRTOS_send
         #define RECV_FUNCTION FreeRTOS_recv
     #else
@@ -268,7 +268,7 @@ int EmbedReceive(WOLFSSL *ssl, char *buf, int sz, void *ctx)
 #endif
 
     recvd = (int)RECV_FUNCTION(sd, buf, sz, ssl->rflags);
-    #ifndef FETT_APPS
+    #ifndef BESSPIN_TOOL_SUITE
         recvd = TranslateReturnCode(recvd, sd);
     #endif
 
@@ -320,7 +320,7 @@ int EmbedReceive(WOLFSSL *ssl, char *buf, int sz, void *ctx)
  */
 int EmbedSend(WOLFSSL* ssl, char *buf, int sz, void *ctx)
 {
-    #ifdef FETT_APPS
+    #ifdef BESSPIN_TOOL_SUITE
         Socket_t sd = *(Socket_t*)ctx;
     #else
         int sd = *(int*)ctx;

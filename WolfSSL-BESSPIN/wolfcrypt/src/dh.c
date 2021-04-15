@@ -71,15 +71,15 @@ void wc_FreeDhKey(DhKey* key)
 #endif
 }
 
-#ifdef FETT_APPS
-    extern void fettPrintf (const char * textToPrint, ...); //to report the error
+#ifdef BESSPIN_TOOL_SUITE
+    extern void besspinPrintf (const char * textToPrint, ...); //to report the error
 #endif
 
 static word32 DiscreteLogWorkFactor(word32 n)
 {
-    #ifdef FETT_APPS
+    #ifdef BESSPIN_TOOL_SUITE
         if (n != 1024) {
-            fettPrintf("<INVALID> [DiscreteLogWorkFactor]: Called with a value different than 1024.\n");
+            besspinPrintf("<INVALID> [DiscreteLogWorkFactor]: Called with a value different than 1024.\n");
         }
         return 82; //the actual answer in case n==1024
     #else
@@ -92,7 +92,7 @@ static word32 DiscreteLogWorkFactor(word32 n)
     #endif
 }
 
-#ifdef FETT_APPS
+#ifdef BESSPIN_TOOL_SUITE
     int GeneratePrivate(DhKey* key, RNG* rng, byte* priv, word32* privSz);
     int GeneratePrivate(DhKey* key, RNG* rng, byte* priv, word32* privSz)
 #else
@@ -115,7 +115,7 @@ static word32 DiscreteLogWorkFactor(word32 n)
     return 0;
 }
 
-#ifdef FETT_APPS
+#ifdef BESSPIN_TOOL_SUITE
     int GeneratePublic(DhKey* key, const byte* priv, word32 privSz,
                           byte* pub, word32* pubSz);
     int GeneratePublic(DhKey* key, const byte* priv, word32 privSz,
