@@ -13,20 +13,18 @@
 
 /* Drivers */
 #include "bsp.h"
-#include "iic.h"
+#if BSP_USE_IIC0
+    #include "iic.h"
+#endif
 
 /* Canlib */
 #include "canspecs.h"
 #include "canlib.h"
 #include "j1939.h"
 
-/* FETT config */
-#include "fettFreeRTOSConfig.h"
-#include "fettFreeRTOSIPConfig.h"
-
-#if !(BSP_USE_IIC0)
-#error "One or more peripherals are nor present, this test cannot be run"
-#endif
+/* BESSPIN config */
+#include "besspinFreeRTOSConfig.h"
+#include "besspinFreeRTOSIPConfig.h"
 
 #define STRINGIZE_NX(A) #A
 #define STRINGIZE(A) STRINGIZE_NX(A)
@@ -66,7 +64,7 @@ static void prvSensorTask(void *pvParameters);
 static void prvCanRxTask(void *pvParameters);
 static void prvInfoTask(void *pvParameters);
 
-void main_fett(void);
+void main_besspin(void);
 void prvMainTask (void *pvParameters);
 void startNetwork(void);
 char *getCurrTime(void);
@@ -222,20 +220,20 @@ void startNetwork()
     FreeRTOS_printf(("%s ECU: FreeRTOS_IPInit\r\n", getCurrTime()));
 }
 
-void main_fett(void)
+void main_besspin(void)
 {
     BaseType_t funcReturn;
 
-    FreeRTOS_printf(("\n>>>Beginning of Fett<<<\r\n"));
+    FreeRTOS_printf(("\n>>>Beginning of Cyberphys<<<\r\n"));
     
     startNetwork();
 
     funcReturn = xTaskCreate(prvMainTask, "prvMainTask", MAINTASK_STACK_SIZE, NULL, MAINTASK_PRIORITY, NULL);
 
     if (funcReturn == pdPASS) {
-        FreeRTOS_printf(("%s (Info)~  main_fett: Created prvMainTask successfully.<<<\r\n", getCurrTime()));
+        FreeRTOS_printf(("%s (Info)~  main_besspin: Created prvMainTask successfully.<<<\r\n", getCurrTime()));
     } else {
-        FreeRTOS_printf(("%s (Error)~  main_fett: Failed to create prvMainTask.<<<\r\n", getCurrTime()));
+        FreeRTOS_printf(("%s (Error)~  main_besspin: Failed to create prvMainTask.<<<\r\n", getCurrTime()));
     }
 }
 
@@ -250,7 +248,11 @@ void prvMainTask (void *pvParameters) {
     uint8_t dummy = 1;
     // Give the sensor time to power up
     vTaskDelay(SENSOR_POWER_UP_DELAY_MS);
-    int res = iic_transmit(&Iic0, TEENSY_I2C_ADDRESS, &dummy, 1);
+    #if BSP_USE_IIC0
+        int res = iic_transmit(&Iic0, TEENSY_I2C_ADDRESS, &dummy, 1);
+    #else
+        int res = 1;
+    #endif
     if (res == 1) {
         FreeRTOS_printf(("%s (Info)~ prvMainTask: iic_transmit OK\r\n", getCurrTime()));
     } else {
@@ -268,7 +270,7 @@ void prvMainTask (void *pvParameters) {
         vTaskDelete(NULL);
     } else {
         FreeRTOS_printf(("%s <NTK-READY>\r\n",getCurrTime()));
-        // For compliance with FETT tool
+        // For compliance with BESSPIN tool
         FreeRTOS_printf(("<NTK-READY>\r\n"));
     }
     
@@ -324,7 +326,7 @@ static void prvInfoTask(void *pvParameters)
         hz_sensor_task_old = hz_sensor_task;
 
         /* IIC bus info */
-#if IIC0_PRINT_STATS
+#if IIC0_PRINT_STATS && BSP_USE_IIC0
         iic0_print_stats();
 #endif
 
@@ -383,17 +385,25 @@ static void prvSensorTask(void *pvParameters)
 
     for (;;)
     {
-        returnval = iic_receive(&Iic0, TEENSY_I2C_ADDRESS, data, 5);
+        #if BSP_USE_IIC0
+            returnval = iic_receive(&Iic0, TEENSY_I2C_ADDRESS, data, 5);
+        #else
+            /* Default to neutral */
+            tmp_gear = 'N';
+            returnval = 1;
+        #endif
         vTaskDelay(pdMS_TO_TICKS(1));
         if (returnval < 1) {
             FreeRTOS_printf(("%s (prvSensorTask) iic_receive error: %i\r\n", getCurrTime(), returnval));
             vTaskDelay(pdMS_TO_TICKS(100));
-            err_cnt++;
-            if (err_cnt >= IIC_RESET_ERROR_THRESHOLD) {
-                FreeRTOS_printf(("%s (prvSensorTask) err_cnt == %i, resetting!\r\n", getCurrTime(), err_cnt));
-                iic0_master_reset();
-                err_cnt = 0;
-            }
+            #if BSP_USE_IIC0
+                err_cnt++;
+                if (err_cnt >= IIC_RESET_ERROR_THRESHOLD) {
+                    FreeRTOS_printf(("%s (prvSensorTask) err_cnt == %i, resetting!\r\n", getCurrTime(), err_cnt));
+                    iic0_master_reset();
+                    err_cnt = 0;
+                }
+            #endif
             continue;
         }
 
