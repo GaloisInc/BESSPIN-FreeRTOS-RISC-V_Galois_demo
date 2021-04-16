@@ -222,9 +222,10 @@ ifeq ($(BSP), qemu)
 	CFLAGS += -DCLINT_CTRL_ADDR=0x2000000
 	APP_SRC += bsp/uart16550.c
 
-#	FREERTOS_SRC += $(LIBVIRTIO_SRC)
-#	INCLUDES += $(LIBVIRTIO_INCLUDE)
-#	FREERTOS_IP_SRC += $(FREERTOS_TCP_SOURCE_DIR)/portable/NetworkInterface/virtio/NetworkInterface.c
+	FREERTOS_SRC += $(LIBVIRTIO_SRC)
+	INCLUDES += $(LIBVIRTIO_INCLUDE)
+	FREERTOS_IP_SRC += $(FREERTOS_TCP_SOURCE_DIR)/portable/NetworkInterface/virtio/NetworkInterface.c
+
 	LINKER_FILE = link-qemu.ld
 else
 $(error unknown Board Support Package (BSP) selected: $(BSP))

@@ -101,6 +101,11 @@
 
 #define configPERIPH_CLOCK_HZ configCPU_CLOCK_HZ 
 
+#if PLATFORM_QEMU_VIRT
+#define configHAS_VIRTIO 1
+#define configHAS_VIRTIO_NET 1
+#endif
+
 #define configTICK_RATE_HZ ((TickType_t)1000)
 #define configMAX_PRIORITIES (5)
 #define configMINIMAL_STACK_SIZE ((uint32_t)1024) /* Can be as low as 60 but some of the demo tasks that use this constant require it to be higher. */
