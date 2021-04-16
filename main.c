@@ -147,6 +147,7 @@ uint32_t port_get_current_mtime(void)
 /**
  * Main application entry
  */
+#include "uart16550.h"
 int main(void)
 {
 	prvSetupHardware();

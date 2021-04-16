@@ -1,0 +1,3 @@
+[submodule "FreeRTOS-Labs-libvirtio"]
+	path = FreeRTOS-Labs-libvirtio
+	url = git@github.com:CTSRD-CHERI/FreeRTOS-Labs-libvirtio.git

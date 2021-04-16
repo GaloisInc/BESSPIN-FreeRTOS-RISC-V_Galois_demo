@@ -1,7 +1,7 @@
 # For debugging
 $(info $$PROG is [${PROG}])
 
-configCPU_CLOCK_HZ ?=
+configCPU_CLOCK_HZ ?= 10000000
 configMTIME_HZ ?=
 BSP 	?= vcu118
 
@@ -107,15 +107,46 @@ ASFLAGS  += -g $(ARCH) $(ABI)  -Wa,-Ilegacy \
 
 CFLAGS = $(WARNINGS) $(C_WARNINGS) $(INCLUDES)
 
+FREERTOS_LIBVIRTIO_DIR = ./FreeRTOS-Labs-libvirtio
+LIBVIRTIO_SRC = \
+   $(FREERTOS_LIBVIRTIO_DIR)/virtio.c \
+   $(FREERTOS_LIBVIRTIO_DIR)/virtio-net.c \
+   $(FREERTOS_LIBVIRTIO_DIR)/helpers.c
+
+LIBVIRTIO_INCLUDE = -I$(FREERTOS_LIBVIRTIO_DIR)
+
+FREERTOS_IP_SRC = \
+	$(FREERTOS_TCP_SOURCE_DIR)/FreeRTOS_IP.c \
+	$(FREERTOS_TCP_SOURCE_DIR)/FreeRTOS_ARP.c \
+	$(FREERTOS_TCP_SOURCE_DIR)/FreeRTOS_DHCP.c \
+	$(FREERTOS_TCP_SOURCE_DIR)/FreeRTOS_DNS.c \
+	$(FREERTOS_TCP_SOURCE_DIR)/FreeRTOS_Sockets.c \
+	$(FREERTOS_TCP_SOURCE_DIR)/FreeRTOS_TCP_IP.c \
+	$(FREERTOS_TCP_SOURCE_DIR)/FreeRTOS_UDP_IP.c \
+	$(FREERTOS_TCP_SOURCE_DIR)/FreeRTOS_TCP_WIN.c \
+	$(FREERTOS_TCP_SOURCE_DIR)/FreeRTOS_Stream_Buffer.c \
+	$(FREERTOS_TCP_SOURCE_DIR)/portable/BufferManagement/BufferAllocation_2.c \
+	bsp/rand.c
+
 DEMO_SRC = main.c \
 	demo/$(PROG).c
+
+FREERTOS_IP_INCLUDE = \
+	-I$(FREERTOS_TCP_SOURCE_DIR) \
+	-I$(FREERTOS_TCP_SOURCE_DIR)/include \
+	-I$(FREERTOS_TCP_SOURCE_DIR)/portable/Compiler/GCC
+
+FREERTOS_IP_DEMO_SRC = \
+	demo/SimpleUDPClientAndServer.c \
+	demo/TCPEchoClient_SingleTasks.c \
+	demo/SimpleTCPEchoServer.c
 
 APP_SRC = \
 	bsp/bsp.c \
 	bsp/plic_driver.c \
 	bsp/syscalls.c
 ifeq ($(BSP),vcu118)
-	BSP_SRC = \
+	APP_SRC += \
 		bsp/uart.c \
 		bsp/iic.c \
 		bsp/gpio.c \
@@ -169,53 +200,37 @@ ifeq ($(BSP),vcu118)
 		-I./bsp/xilinx/iic \
 		-I./bsp/xilinx/spi \
 		-I./bsp/xilinx/gpio
+	FREERTOS_IP_SRC += $(FREERTOS_TCP_SOURCE_DIR)/portable/NetworkInterface/RISC-V/riscv_hal_eth.c \
+		$(FREERTOS_TCP_SOURCE_DIR)/portable/NetworkInterface/RISC-V/NetworkInterface.c
+	LINKER_FILE = link.ld
 else
 ifeq ($(BSP),awsf1)
-	BSP_SRC = \
+	APP_SRC += \
 		bsp/uart_sifive.c \
 		bsp/icenet.c \
 		bsp/iceblk.c
 	include envAws.mk
-else 
-$(error unknown Board Support Package (BSP) selected: $(BSP))
-endif
-endif
-
-APP_SRC += $(BSP_SRC)
-
-ASFLAGS  += -g $(ARCH) $(ABI)  -Wa,-Ilegacy \
-	-I$(FREERTOS_SOURCE_DIR)/portable/GCC/RISC-V/chip_specific_extensions/RV32I_CLINT_no_extensions \
-	-DportasmHANDLE_INTERRUPT=external_interrupt_handler
-
-FREERTOS_IP_SRC = \
-	$(FREERTOS_TCP_SOURCE_DIR)/FreeRTOS_IP.c \
-	$(FREERTOS_TCP_SOURCE_DIR)/FreeRTOS_ARP.c \
-	$(FREERTOS_TCP_SOURCE_DIR)/FreeRTOS_DHCP.c \
-	$(FREERTOS_TCP_SOURCE_DIR)/FreeRTOS_DNS.c \
-	$(FREERTOS_TCP_SOURCE_DIR)/FreeRTOS_Sockets.c \
-	$(FREERTOS_TCP_SOURCE_DIR)/FreeRTOS_TCP_IP.c \
-	$(FREERTOS_TCP_SOURCE_DIR)/FreeRTOS_UDP_IP.c \
-	$(FREERTOS_TCP_SOURCE_DIR)/FreeRTOS_TCP_WIN.c \
-	$(FREERTOS_TCP_SOURCE_DIR)/FreeRTOS_Stream_Buffer.c \
-	$(FREERTOS_TCP_SOURCE_DIR)/portable/BufferManagement/BufferAllocation_2.c \
-	$(FREERTOS_TCP_SOURCE_DIR)/portable/NetworkInterface/RISC-V/NetworkInterface.c \
-	bsp/rand.c
-
-ifeq ($(BSP), awsf1)
-FREERTOS_IP_SRC += $(FREERTOS_TCP_SOURCE_DIR)/portable/NetworkInterface/RISC-V/riscv_icenet_eth.c 
+	FREERTOS_IP_SRC += $(FREERTOS_TCP_SOURCE_DIR)/portable/NetworkInterface/RISC-V/riscv_icenet_eth.c \
+		$(FREERTOS_TCP_SOURCE_DIR)/portable/NetworkInterface/RISC-V/NetworkInterface.c
+	LINKER_FILE = link.ld
 else
-FREERTOS_IP_SRC += $(FREERTOS_TCP_SOURCE_DIR)/portable/NetworkInterface/RISC-V/riscv_hal_eth.c 
-endif
+ifeq ($(BSP), qemu)
+	CFLAGS += -DPLATFORM_QEMU_VIRT=1
+	CFLAGS += -DBSP_USE_ETHERNET=0 -DBSP_USE_DMA=0
+	CFLAGS += -DVTNET_LEGACY_TX=1
+	CFLAGS += -DVIRTIO_USE_MMIO=1
+	CFLAGS += -DCLINT_CTRL_ADDR=0x2000000
+	APP_SRC += bsp/uart16550.c
 
-FREERTOS_IP_INCLUDE = \
-	-I$(FREERTOS_TCP_SOURCE_DIR) \
-	-I$(FREERTOS_TCP_SOURCE_DIR)/include \
-	-I$(FREERTOS_TCP_SOURCE_DIR)/portable/Compiler/GCC
-
-FREERTOS_IP_DEMO_SRC = \
-	demo/SimpleUDPClientAndServer.c \
-	demo/TCPEchoClient_SingleTasks.c \
-	demo/SimpleTCPEchoServer.c
+#	FREERTOS_SRC += $(LIBVIRTIO_SRC)
+#	INCLUDES += $(LIBVIRTIO_INCLUDE)
+#	FREERTOS_IP_SRC += $(FREERTOS_TCP_SOURCE_DIR)/portable/NetworkInterface/virtio/NetworkInterface.c
+	LINKER_FILE = link-qemu.ld
+else
+$(error unknown Board Support Package (BSP) selected: $(BSP))
+endif # qemu
+endif # vcu118
+endif # awsf1
 
 ifeq ($(PROG),main_blinky)
 	CFLAGS += -DmainDEMO_TYPE=1
@@ -426,7 +441,7 @@ PORT_ASM_OBJ = $(PORT_ASM:.S=.o)
 CRT0_OBJ = $(CRT0:.S=.o)
 OBJS = $(CRT0_OBJ) $(PORT_ASM_OBJ) $(PORT_OBJ) $(RTOS_OBJ) $(DEMO_OBJ) $(APP_OBJ) $(CPP_OBJ)
 
-LDFLAGS	 += -T link.ld -nostartfiles -nostdlib $(ARCH) $(ABI) $(LINKER_FLAGS)
+LDFLAGS	 += -T $(LINKER_FILE) -nostartfiles -nostdlib $(ARCH) $(ABI) $(LINKER_FLAGS)
 
 $(info ASFLAGS=$(ASFLAGS))
 $(info LDLIBS=$(LDLIBS))

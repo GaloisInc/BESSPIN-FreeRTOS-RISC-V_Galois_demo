@@ -72,8 +72,6 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
-#include "uart.h"
-#include "iic.h"
 
 /* Priorities used by the tasks. */
 #define mainQUEUE_RECEIVE_TASK_PRIORITY (tskIDLE_PRIORITY + 2)

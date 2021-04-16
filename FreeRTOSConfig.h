@@ -82,7 +82,9 @@
  * See http://www.freertos.org/a00110.html.
  *----------------------------------------------------------*/
 //#define configISR_STACK_SIZE_WORDS      500
-#define CLINT_CTRL_ADDR 0x10000000
+#if !defined(CLINT_CTRL_ADDR)
+    #define CLINT_CTRL_ADDR 0x10000000
+#endif
 #define configMTIME_BASE_ADDRESS		( CLINT_CTRL_ADDR + 0xBFF8UL )
 #define configMTIMECMP_BASE_ADDRESS		( CLINT_CTRL_ADDR + 0x4000UL )
 #define configUSE_PREEMPTION 1
@@ -98,7 +100,6 @@
 #endif /* !defined(configCPU_CLOCK_HZ) */
 
 #define configPERIPH_CLOCK_HZ configCPU_CLOCK_HZ 
-
 
 #define configTICK_RATE_HZ ((TickType_t)1000)
 #define configMAX_PRIORITIES (5)

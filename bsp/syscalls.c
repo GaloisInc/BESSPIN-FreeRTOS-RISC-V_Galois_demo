@@ -17,8 +17,15 @@ int _kill(int pid, int sig);
 int _getpid(int n);
 void _exit(int n);
 
+#if PLATFORM_QEMU_VIRT
+void vTerminate(int32_t lExitCode);
+#endif
+
 void _exit(int n) {
     (void)n;
+    #if PLATFORM_QEMU_VIRT
+        vTerminate( n );
+    #endif
     configASSERT(0);
 }
 
@@ -88,3 +95,28 @@ int _getpid(int n)
     (void)n;
     return 1;
 }
+
+#if PLATFORM_QEMU_VIRT
+#ifndef SIFIVE_TEST_BASE
+    #define SIFIVE_TEST_BASE    0x100000
+#endif
+
+#define TEST_PASS               0x5555
+#define TEST_FAIL               0x3333
+
+void vTerminate( int32_t lExitCode )
+{
+    volatile uint32_t * sifive_test = ( uint32_t * ) SIFIVE_TEST_BASE;
+    uint32_t test_command = TEST_PASS;
+
+    if( lExitCode != 0 )
+    {
+        test_command = ( lExitCode << 16 ) | TEST_FAIL;
+    }
+
+    while( sifive_test != NULL )
+    {
+        *sifive_test = test_command;
+    }
+}
+#endif
