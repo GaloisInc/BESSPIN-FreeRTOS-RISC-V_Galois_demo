@@ -232,6 +232,8 @@ static void prvSimpleZeroCopyServerTask(void *pvParameters)
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
 #endif
 	xBindAddress.sin_port = (uint16_t)((uint32_t)pvParameters) & 0xffffUL;
+
+	FreeRTOS_printf(("prvSimpleZeroCopyServerTask: port: %u\r\n",xBindAddress.sin_port));
 #if defined(__clang__)
 #else
 #pragma GCC diagnostic pop
@@ -250,6 +252,7 @@ static void prvSimpleZeroCopyServerTask(void *pvParameters)
 		IP stack is no longer responsible for releasing the buffer, and
 		the task *must* return the buffer to the stack when it is no longer
 		needed.  By default the block time is portMAX_DELAY. */
+		FreeRTOS_printf(("prvSimpleZeroCopyServerTask: waiting for data\r\n"));
 		lBytes = FreeRTOS_recvfrom(xListeningSocket, (void *)&pucUDPPayloadBuffer, 0, FREERTOS_ZERO_COPY, &xClient, &xClientLength);
 
 		/* Print the received characters. */

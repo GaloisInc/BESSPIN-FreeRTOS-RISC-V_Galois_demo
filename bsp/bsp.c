@@ -47,10 +47,15 @@ void prvSetupHardware(void)
 #endif
 
 #if BSP_USE_ETHERNET
+    #if PLATFORM_QEMU_VIRT
+    // TODO: Seems to be handled in NetworkInterface.c
+    //PLIC_set_priority(&Plic, QEMU_VIRT_NET_PLIC_INTERRUPT_ID, QEMU_VIRT_NET_PLIC_INTERRUPT_PRIO);
+    #else
     configASSERT(BSP_USE_DMA);
     PLIC_set_priority(&Plic, PLIC_SOURCE_ETH, PLIC_PRIORITY_ETH);
     PLIC_set_priority(&Plic, PLIC_SOURCE_DMA_MM2S, PLIC_PRIORITY_DMA_MM2S);
     PLIC_set_priority(&Plic, PLIC_SOURCE_DMA_S2MM, PLIC_PRIORITY_DMA_S2MM);
+    #endif
 #endif
 
 #if BSP_USE_ICENET
