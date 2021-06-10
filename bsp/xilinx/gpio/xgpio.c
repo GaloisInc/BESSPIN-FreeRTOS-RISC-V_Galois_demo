@@ -133,6 +133,7 @@ int XGpio_CfgInitialize(XGpio * InstancePtr, XGpio_Config * Config,
 	#ifdef __CHERI_PURE_CAPABILITY__
 		InstancePtr->BaseAddress = cheri_build_data_cap((ptraddr_t) EffectiveAddr,
 				XPAR_GPIO_0_SIZE,
+				__CHERI_CAP_PERMISSION_GLOBAL__ |
 				__CHERI_CAP_PERMISSION_PERMIT_LOAD__ |
 				__CHERI_CAP_PERMISSION_PERMIT_STORE__);
 	#endif

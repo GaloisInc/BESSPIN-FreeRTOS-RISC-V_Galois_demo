@@ -187,6 +187,7 @@ int XIic_CfgInitialize(XIic *InstancePtr, XIic_Config * Config,
 	#ifdef __CHERI_PURE_CAPABILITY__
 		InstancePtr->BaseAddress = cheri_build_data_cap((ptraddr_t) EffectiveAddr,
 				XPAR_IIC_0_SIZE,
+				__CHERI_CAP_PERMISSION_GLOBAL__ |
 				__CHERI_CAP_PERMISSION_PERMIT_LOAD__ |
 				__CHERI_CAP_PERMISSION_PERMIT_STORE__);
 	#endif

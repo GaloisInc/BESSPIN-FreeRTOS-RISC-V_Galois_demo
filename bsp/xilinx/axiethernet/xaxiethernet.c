@@ -174,6 +174,7 @@ int XAxiEthernet_CfgInitialize(XAxiEthernet *InstancePtr,
 		InstancePtr->Config.BaseAddress =
 			cheri_build_data_cap((ptraddr_t) EffectiveAddress,
 				XPAR_AXIETHERNET_0_SIZE,
+				__CHERI_CAP_PERMISSION_GLOBAL__ |
 				__CHERI_CAP_PERMISSION_PERMIT_LOAD__ |
 				__CHERI_CAP_PERMISSION_PERMIT_STORE__);
 	#endif

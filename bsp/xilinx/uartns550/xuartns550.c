@@ -160,6 +160,7 @@ int XUartNs550_CfgInitialize(XUartNs550 *InstancePtr,
 	#ifdef __CHERI_PURE_CAPABILITY__
 		InstancePtr->BaseAddress = cheri_build_data_cap((ptraddr_t) EffectiveAddr,
 				XPAR_UARTNS550_0_SIZE,
+				__CHERI_CAP_PERMISSION_GLOBAL__ |
 				__CHERI_CAP_PERMISSION_PERMIT_LOAD__ |
 				__CHERI_CAP_PERMISSION_PERMIT_STORE__);
 	#endif
