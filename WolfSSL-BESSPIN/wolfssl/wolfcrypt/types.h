@@ -162,7 +162,7 @@
         /* default to libc stuff */
         /* XREALLOC is used once in normal math lib, not in fast math lib */
         /* XFREE on some embeded systems doesn't like free(0) so test  */
-        #ifdef FETT_APPS
+        #ifdef BESSPIN_TOOL_SUITE
             #define XMALLOC(s, h, t) ((void) h, (void) t, pvPortMalloc((s)))
             extern void *XREALLOC(void *p, size_t n, void* heap, int type);
             #define XFREE(p, h, t) ((void) h, (void) t, vPortFree((p)))
