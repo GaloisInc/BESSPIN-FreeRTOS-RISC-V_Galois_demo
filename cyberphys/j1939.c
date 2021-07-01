@@ -218,6 +218,8 @@ uint8_t send_can_message(canlib_socket_t socket, canlib_sockaddr_t *dstaddr, uin
     }
 }
 
+static void* rmsg = NULL;
+
 uint8_t recv_can_message(canlib_socket_t socket, canlib_sockaddr_t *srcaddr, canid_t *can_id,
                          void *rmessage, size_t *rmessage_len)
 {
@@ -273,11 +275,17 @@ uint8_t recv_can_message(canlib_socket_t socket, canlib_sockaddr_t *srcaddr, can
             /* get bam nbytes, data */
             params_bam(frame, &rpgn, &rnbytes, &rnpackets);
             printf("(recv_can_message) Got: rpgn: %u, rnbytes: %u, rnpackets: %u\r\n", rpgn, rnbytes, rnpackets);
-            void *rmsg = (void *)bam_can_frames_to_data((can_frame *)buffer);
+
+            // If a previous recv_can_message faulted and failed to free the allocated
+            // buffer, wait until rmsg is freed by the fault handler
+            while(rmsg != NULL);
+
+            rmsg = (void *)bam_can_frames_to_data((can_frame *)buffer);
             *rmessage_len = rnbytes;
             printf("(recv_can_message) rmessage_len: %lu\r\n", *rmessage_len);
             memcpy(rmessage, (void *)rmsg, *rmessage_len);
             canlib_free(rmsg);
+            rmsg = NULL;
             return SUCCESS;
         }
         else
@@ -286,4 +294,25 @@ uint8_t recv_can_message(canlib_socket_t socket, canlib_sockaddr_t *srcaddr, can
             return UNKNOWN_RECV;
         }
     }
+}
+
+/**
+ * CHERI-aware compartmentalizaion fault handler that gets called by the daemon
+ * task on any faults assocaited with this compartment (j1939).
+ * In this particular scenario, a specific attack is assumed to be known and
+ * accordingly a custom fault handling is applied by freeing an allocated
+ * buffer before the attack attempt and then return an error to the caller
+ * compartment.
+ *
+ */
+//static void CheriFreeRTOS_FaultHandler(void* pvParameter1, uint32_t comp_id) __attribute__((used));
+static void CheriFreeRTOS_FaultHandler(void* pvParameter1, uint32_t comp_id) __attribute__((used)) {
+  (void) pvParameter1;
+  (void) comp_id;
+
+  if (rmsg != NULL) {
+    canlib_free(rmsg);
+  }
+
+  rmsg = NULL;
 }
