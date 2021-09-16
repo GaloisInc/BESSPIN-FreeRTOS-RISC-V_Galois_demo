@@ -5,6 +5,7 @@ configCPU_CLOCK_HZ ?=
 configMTIME_HZ ?=
 BSP 	?= vcu118
 
+CLANG		?= clang
 CCPATH 		?=
 TARGET=$(CCPATH)riscv64-unknown-elf
 
@@ -36,9 +37,9 @@ endif
 
 # Decide which compiler to use
 ifeq ($(USE_CLANG),yes)
-	CC		= clang --target=$(CLANG_ARCH)
-	CPP		= clang++
-	LD		= clang --target=$(CLANG_ARCH) -v
+	CC		= $(CLANG) --target=$(CLANG_ARCH)
+	CPP		= $(CLANG)++
+	LD		= $(CLANG) --target=$(CLANG_ARCH) -v
 	OBJCOPY	= llvm-objcopy
 	OBJDUMP	= llvm-objdump
 	AR		= llvm-ar
