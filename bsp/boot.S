@@ -108,7 +108,11 @@ boot:
     candperm        ct0, ct0, t1
     la              t2, _mstart
     csetoffset      ct0, ct0, t2
+#ifdef __riscv_xcheri_mode_dependent_jumps
+    jr.cap          ct0
+#else
     cjr             ct0
+#endif
 #else
 #ifdef NETBOOT
 #if __riscv_xlen == 64
@@ -212,7 +216,11 @@ init_stack:
     # ct0 is still PCC
     la              t1, _start_purecap
     csetoffset      ct0, ct0, t1
+#ifdef __riscv_xcheri_mode_dependent_jumps
+    jalr.cap        cra, ct0
+#else
     cjalr           cra, ct0
+#endif
 
     # From now on, the DDC is always null.
     cmove           ct0, cnull
@@ -230,7 +238,11 @@ init_stack:
 
     la              t1, main
     csetoffset      ct0, ct0, t1
+#ifdef __riscv_xcheri_mode_dependent_jumps
+    jalr.cap        cra, ct0 # jump to main
+#else
     cjalr           cra, ct0 # jump to main
+#endif
 #else
     /* set stack pointer */
     la	sp, _stack
