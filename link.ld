@@ -103,7 +103,7 @@ SECTIONS {
       *(.uncached);
 		*(.uncached.*);
    } > cmem
-	. = ALIGN(8)
+	. = ALIGN(8);
 	.text : {
 	    *boot.o(.text);
 		*(.text);
