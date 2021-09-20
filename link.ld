@@ -151,10 +151,12 @@ SECTIONS {
 
       __cap_relocs : {
            . = ALIGN(16);
+           *(__cap_relocs);
       } > dmem
 
       .captable : {
            . = ALIGN(16);
+           *(.captable);
       } > dmem
 
     .bss (NOLOAD) : {
