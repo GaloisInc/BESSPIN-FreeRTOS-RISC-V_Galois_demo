@@ -98,13 +98,13 @@ ENTRY(boot)
  * Define the sections, and where they are mapped in memory 
  ****************************************************************************/
 SECTIONS {
+   . = ALIGN(64);
    .uncached (NOLOAD) : {
-      . = ALIGN(64);
       *(.uncached);
 		*(.uncached.*);
    } > cmem
+	. = ALIGN(8)
 	.text : {
-      . = ALIGN(8);
 	    *boot.o(.text);
 		*(.text);
 		*(.text.*);
@@ -140,8 +140,8 @@ SECTIONS {
         *(.sdata .sdata.* .gnu.linkonce.s.*)
      }	> dmem
 
+	. = ALIGN(8);
 	.data : {
-	   . = ALIGN(8);
 	   __data_start = .;
 	   *(.data)
 	   *(.data.*)
@@ -150,17 +150,15 @@ SECTIONS {
 	} > dmem
 
       __cap_relocs : {
-           . = ALIGN(16);
            *(__cap_relocs);
       } > dmem
 
       .captable : {
-           . = ALIGN(16);
            *(.captable);
       } > dmem
 
+    . = ALIGN(8);
     .bss (NOLOAD) : {
-       . = ALIGN(8);
        __bss_start = .;
        *(.bss)
        *(.bss.*)
@@ -174,8 +172,8 @@ SECTIONS {
     * Stack is used by the ISR and the main() for initialization
     * Stack grows downwards
     */
+   . = ALIGN(16);
    .stack (NOLOAD) : {
-       . = ALIGN(16);
        _stack_end = .;
        . += _STACK_SIZE;
        _stack = .;
@@ -183,9 +181,9 @@ SECTIONS {
        __freertos_irq_stack_top = _stack;
     } > dmem
 
+    . = ALIGN(16);
    /* Heap grows upwards */
     .heap (NOLOAD) : {
-       . = ALIGN(16);
        _heap = .;
        _heap_start = .;
        . += _HEAP_SIZE;
