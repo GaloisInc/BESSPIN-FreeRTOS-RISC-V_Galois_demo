@@ -173,18 +173,17 @@ SECTIONS {
     * Stack grows downwards
     */
    .stack (NOLOAD) : {
+       . = ALIGN(16);
        _stack_end = .;
        . += _STACK_SIZE;
-       . = ALIGN(8);
        _stack = .;
        __stack = _stack;
-       . = ALIGN(64); 
-       __freertos_irq_stack_top = .;
+       __freertos_irq_stack_top = _stack;
     } > dmem
 
    /* Heap grows upwards */
     .heap (NOLOAD) : {
-       . = ALIGN(8);
+       . = ALIGN(16);
        _heap = .;
        _heap_start = .;
        . += _HEAP_SIZE;
