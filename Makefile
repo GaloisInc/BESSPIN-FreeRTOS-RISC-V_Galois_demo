@@ -189,6 +189,12 @@ ifeq ($(BSP),vcu118)
 		-I./bsp/xilinx/iic \
 		-I./bsp/xilinx/spi \
 		-I./bsp/xilinx/gpio
+ifeq ($(PROC_LEVEL),p3)
+        configCPU_CLOCK_HZ=25000000
+        ifeq ($(PROC_FLAVOR),bluespec)
+                configMTIME_HZ=250000
+        endif
+endif
 else
 ifeq ($(BSP),awsf1)
 	BSP_SRC = \
