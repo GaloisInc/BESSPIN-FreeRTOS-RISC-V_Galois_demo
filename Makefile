@@ -13,6 +13,7 @@ XLEN?=32
 
 ifeq ($(CHERI),1)
 	USE_CLANG		= yes
+	TARGET_CFLAGS		= -Xclang -cheri-bounds=aggressive
 endif
 
 ifeq ($(XLEN),64)
@@ -471,7 +472,7 @@ $(info ARFLAGS=$(ARFLAGS))
 
 %.o: %.c
 	@echo "    CC $<"
-	@$(CC) -c $(CFLAGS) -o $@ $<
+	@$(CC) -c $(CFLAGS) $(_TARGET_CFLAGS) -o $@ $<
 
 %.o: %.cpp
 	@echo "    C++ $<"
