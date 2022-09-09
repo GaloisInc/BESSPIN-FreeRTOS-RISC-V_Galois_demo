@@ -1,4 +1,8 @@
 /*
+
+    Copyright (c) 2021 Hesham Almatary <Hesham.Almatary@cl.cam.ac.uk>
+    See LICENSE_CHERI
+
     FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
@@ -94,13 +98,12 @@ ENTRY(boot)
  * Define the sections, and where they are mapped in memory 
  ****************************************************************************/
 SECTIONS {
-   .uncached : {
-      . = ALIGN(64);
+   .uncached (NOLOAD) : {
       *(.uncached);
 		*(.uncached.*);
    } > cmem
-	.text : {
-      . = ALIGN(8);
+
+	.text : ALIGN(8) {
 	    *boot.o(.text);
 		*(.text);
 		*(.text.*);
@@ -122,7 +125,7 @@ SECTIONS {
        __rodata_end = .;
 	} > dmem
 
-	.sbss : {
+	.sbss (NOLOAD) : {
 	   __sbss_start = .;
 	   *(.sbss)
 	   *(.sbss.*)
@@ -137,7 +140,6 @@ SECTIONS {
      }	> dmem
 
 	.data : {
-	   . = ALIGN(8);
 	   __data_start = .;
 	   *(.data)
 	   *(.data.*)
@@ -145,8 +147,15 @@ SECTIONS {
 	   __data_end = .;
 	} > dmem
 
-    .bss : {
-       . = ALIGN(8);
+      __cap_relocs : {
+           *(__cap_relocs);
+      } > dmem
+
+      .captable : {
+           *(.captable);
+      } > dmem
+
+    .bss (NOLOAD) : ALIGN(8) {
        __bss_start = .;
        *(.bss)
        *(.bss.*)
@@ -160,19 +169,16 @@ SECTIONS {
     * Stack is used by the ISR and the main() for initialization
     * Stack grows downwards
     */
-   .stack : {
+   .stack (NOLOAD) : ALIGN(16) {
        _stack_end = .;
        . += _STACK_SIZE;
-       . = ALIGN(8);
        _stack = .;
        __stack = _stack;
-       . = ALIGN(64); 
-       __freertos_irq_stack_top = .;
+       __freertos_irq_stack_top = _stack;
     } > dmem
 
    /* Heap grows upwards */
-    .heap : {
-       . = ALIGN(8);
+    .heap (NOLOAD) : ALIGN(16) {
        _heap = .;
        _heap_start = .;
        . += _HEAP_SIZE;

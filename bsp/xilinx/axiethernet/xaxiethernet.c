@@ -63,6 +63,13 @@
 #include <string.h> // for memset
 #include <stdio.h> // for xaxi_debug_printf
 #include "bsp.h" // for "sleep"
+
+#include <FreeRTOSConfig.h>
+
+#ifdef __CHERI_PURE_CAPABILITY__
+#include <cheri/cheri-utility.h>
+#endif /* __CHERI_PURE_CAPABILITY__ */
+
 /************************** Constant Definitions *****************************/
 
 /**************************** Type Definitions *******************************/
@@ -162,6 +169,15 @@ int XAxiEthernet_CfgInitialize(XAxiEthernet *InstancePtr,
 
 	/* Set device base address */
 	InstancePtr->Config.BaseAddress = EffectiveAddress;
+
+	#ifdef __CHERI_PURE_CAPABILITY__
+		InstancePtr->Config.BaseAddress =
+			cheri_build_data_cap((ptraddr_t) EffectiveAddress,
+				XPAR_AXIETHERNET_0_SIZE,
+				__CHERI_CAP_PERMISSION_GLOBAL__ |
+				__CHERI_CAP_PERMISSION_PERMIT_LOAD__ |
+				__CHERI_CAP_PERMISSION_PERMIT_STORE__);
+	#endif
 
 	/* Reset the hardware and set default options */
 	InstancePtr->IsReady = XIL_COMPONENT_IS_READY;

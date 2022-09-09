@@ -5,26 +5,42 @@ configCPU_CLOCK_HZ ?=
 configMTIME_HZ ?=
 BSP 	?= vcu118
 
+CLANG		?= clang
 CCPATH 		?=
 TARGET=$(CCPATH)riscv64-unknown-elf
 
 XLEN?=32
 
+ifeq ($(CHERI),1)
+	USE_CLANG		= yes
+	TARGET_CFLAGS		= -Xclang -cheri-bounds=aggressive
+endif
+
 ifeq ($(XLEN),64)
+ifeq ($(CHERI),1)
+	ARCH 		= -march=rv64imacxcheri
+	ABI 		= -mabi=l64pc128
+else
 	ARCH 		= -march=rv64imac
 	ABI 		= -mabi=lp64
+endif
 	CLANG_ARCH  = riscv64
+else
+ifeq ($(CHERI),1)
+	ARCH 		= -march=rv32imxcheri
+	ABI 		= -mabi=il32pc64
 else
 	ARCH 		= -march=rv32im
 	ABI 		= -mabi=ilp32
+endif
 	CLANG_ARCH  = riscv32
 endif
 
 # Decide which compiler to use
 ifeq ($(USE_CLANG),yes)
-	CC		= clang --target=$(CLANG_ARCH)
-	CPP		= clang++
-	LD		= clang --target=$(CLANG_ARCH) -v
+	CC		= $(CLANG) --target=$(CLANG_ARCH)
+	CPP		= $(CLANG)++
+	LD		= $(CLANG) --target=$(CLANG_ARCH) -v
 	OBJCOPY	= llvm-objcopy
 	OBJDUMP	= llvm-objdump
 	AR		= llvm-ar
@@ -91,7 +107,12 @@ FREERTOS_SRC = \
 APP_SOURCE_DIR	= ../Common/Minimal
 
 PORT_SRC = $(FREERTOS_SOURCE_DIR)/portable/GCC/RISC-V/port.c
-PORT_ASM = $(FREERTOS_SOURCE_DIR)/portable/GCC/RISC-V/portASM.S
+
+ifeq ($(CHERI),1)
+	PORT_ASM = $(FREERTOS_SOURCE_DIR)/portable/GCC/RISC-V/chip_specific_extensions/CHERI/portASM.S
+else
+	PORT_ASM = $(FREERTOS_SOURCE_DIR)/portable/GCC/RISC-V/portASM.S
+endif
 
 INCLUDES = \
 	-I. \
@@ -105,7 +126,7 @@ ASFLAGS  += -g $(ARCH) $(ABI)  -Wa,-Ilegacy \
 	-I$(FREERTOS_SOURCE_DIR)/portable/GCC/RISC-V/chip_specific_extensions/RV32I_CLINT_no_extensions \
 	-DportasmHANDLE_INTERRUPT=external_interrupt_handler
 
-CFLAGS = $(WARNINGS) $(C_WARNINGS) $(INCLUDES)
+CFLAGS = $(WARNINGS) $(C_WARNINGS) $(INCLUDES) -ftrivial-auto-var-init=zero -enable-trivial-auto-var-init-zero-knowing-it-will-be-removed-from-clang
 
 DEMO_SRC = main.c \
 	demo/$(PROG).c
@@ -169,6 +190,12 @@ ifeq ($(BSP),vcu118)
 		-I./bsp/xilinx/iic \
 		-I./bsp/xilinx/spi \
 		-I./bsp/xilinx/gpio
+ifeq ($(PROC_LEVEL),p3)
+        configCPU_CLOCK_HZ=25000000
+        ifeq ($(PROC_FLAVOR),bluespec)
+                configMTIME_HZ=250000
+        endif
+endif
 else
 ifeq ($(BSP),awsf1)
 	BSP_SRC = \
@@ -216,6 +243,14 @@ FREERTOS_IP_DEMO_SRC = \
 	demo/SimpleUDPClientAndServer.c \
 	demo/TCPEchoClient_SingleTasks.c \
 	demo/SimpleTCPEchoServer.c
+
+ifeq ($(CHERI),1)
+	FREERTOS_CHERI_SRC = ../../../FreeRTOS-Labs/FreeRTOS-Labs/Source/FreeRTOS-libcheri/cheri/cheri-riscv.c
+	FREERTOS_CHERI_INCLUDE = -I../../../FreeRTOS-Labs/FreeRTOS-Labs/Source/FreeRTOS-libcheri/include
+
+	FREERTOS_SRC += $(FREERTOS_CHERI_SRC)
+	INCLUDES += $(FREERTOS_CHERI_INCLUDE)
+endif
 
 ifeq ($(PROG),main_blinky)
 	CFLAGS += -DmainDEMO_TYPE=1
@@ -359,7 +394,19 @@ ifeq ($(PROG),main_uart_malware)
 else
 ifeq ($(PROG),main_besspin)
 	CFLAGS += -DmainDEMO_TYPE=12
+	ifeq ($(DEMO),cyberphys)
+	# Demo cyberphys
+	CFLAGS += -DFETT_APPS -DFREERTOS -DBSP_USE_IIC0 -DUSE_CURRENT_TIME
+	WERROR =
+	INCLUDES += $(FREERTOS_IP_INCLUDE) \
+		-I./cyberphys
+	FREERTOS_SRC += $(FREERTOS_IP_SRC)
+	DEMO_SRC += cyberphys/canlib.c \
+    	cyberphys/j1939.c
+	else
+	# regular FETT compilation
 	include $(INC_BESSPIN_TOOL_SUITE)/envBesspin.mk
+	endif
 else
 ifeq ($(PROG),main_netboot)
 	CFLAGS += -DmainDEMO_TYPE=13 -DNETBOOT
@@ -425,7 +472,7 @@ $(info ARFLAGS=$(ARFLAGS))
 
 %.o: %.c
 	@echo "    CC $<"
-	@$(CC) -c $(CFLAGS) -o $@ $<
+	@$(CC) -c $(CFLAGS) $(_TARGET_CFLAGS) -o $@ $<
 
 %.o: %.cpp
 	@echo "    C++ $<"

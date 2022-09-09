@@ -88,6 +88,13 @@
 
 #include "xaxidma.h"
 #include <stdio.h>
+#include "bsp.h"
+
+#include <FreeRTOSConfig.h>
+
+#ifdef __CHERI_PURE_CAPABILITY__
+#include <cheri/cheri-utility.h>
+#endif /* __CHERI_PURE_CAPABILITY__ */
 
 /************************** Constant Definitions *****************************/
 
@@ -143,6 +150,14 @@ int XAxiDma_CfgInitialize(XAxiDma * InstancePtr, XAxiDma_Config *Config)
 	if(!Config) {
 		return XST_INVALID_PARAM;
 	}
+
+	#ifdef __CHERI_PURE_CAPABILITY__
+		Config->BaseAddr = cheri_build_data_cap((ptraddr_t) Config->BaseAddr,
+				XPAR_AXIDMA_0_SIZE,
+				__CHERI_CAP_PERMISSION_GLOBAL__ |
+				__CHERI_CAP_PERMISSION_PERMIT_LOAD__ |
+				__CHERI_CAP_PERMISSION_PERMIT_STORE__);
+	#endif
 
 	BaseAddr = Config->BaseAddr;
 

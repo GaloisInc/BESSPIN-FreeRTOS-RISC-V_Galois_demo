@@ -30,6 +30,7 @@
  * PLIC defines
  */
 #define PLIC_BASE_ADDR (0xC000000ULL)
+#define PLIC_BASE_SIZE 0x400000
 
 #define PLIC_NUM_SOURCES 16
 #define PLIC_NUM_PRIORITIES 16
@@ -82,6 +83,7 @@ void external_interrupt_handler(HANDLER_DATATYPE cause);
 #define XPAR_UARTNS550_0_DEVICE_ID 0
 #define XPAR_UARTNS550_0_BAUD_RATE XPAR_DEFAULT_BAUD_RATE
 #define XPAR_UARTNS550_0_BASEADDR 0x62300000ULL
+#define XPAR_UARTNS550_0_SIZE 0x1000
 #define XPAR_UARTNS550_0_CLOCK_HZ configPERIPH_CLOCK_HZ
 
 
@@ -96,6 +98,7 @@ void external_interrupt_handler(HANDLER_DATATYPE cause);
 #define XPAR_UARTNS550_1_DEVICE_ID 1
 #define XPAR_UARTNS550_1_BAUD_RATE XPAR_DEFAULT_BAUD_RATE
 #define XPAR_UARTNS550_1_BASEADDR (0x62340000ULL)
+#define XPAR_UARTNS550_1_SIZE 0x1000
 #define XPAR_UARTNS550_1_CLOCK_HZ configPERIPH_CLOCK_HZ
 
 
@@ -112,6 +115,7 @@ void external_interrupt_handler(HANDLER_DATATYPE cause);
 #define XPAR_AXIDMA_0_DEVICE_ID 0
 // Virtual base address of DMA engine
 #define XPAR_AXIDMA_0_BASEADDR 0x62200000ULL
+#define XPAR_AXIDMA_0_SIZE 0x10000
 // Control/status stream
 #define XPAR_AXIDMA_0_SG_INCLUDE_STSCNTRL_STRM 1
 // AXI4 memory-mapped to stream
@@ -146,6 +150,7 @@ void external_interrupt_handler(HANDLER_DATATYPE cause);
 #define XPAR_AXIETHERNET_0_PHYADDR 0x03
 #define XPAR_AXIETHERNET_0_DEVICE_ID 0
 #define XPAR_AXIETHERNET_0_BASEADDR 0x62100000ULL
+#define XPAR_AXIETHERNET_0_SIZE 0x40000
 // 0 for SoftTemac at 10/100 Mbps, 1 for SoftTemac at 10/100/1000 Mbps and 2 for Vitex6 Hard Temac
 #define XPAR_AXIETHERNET_0_TEMAC_TYPE 2 // TODO: not sure if this is right
 // TxCsum indicates that the device has checksum offload on the Tx channel or not.
@@ -201,6 +206,7 @@ void external_interrupt_handler(HANDLER_DATATYPE cause);
 #define XPAR_XIIC_NUM_INSTANCES 1
 #define XPAR_IIC_0_DEVICE_ID 0
 #define XPAR_IIC_0_BASEADDR (0x62310000ULL)
+#define XPAR_IIC_0_SIZE 0x1000
 #define XPAR_IIC_0_TEN_BIT_ADR 0
 #define XPAR_IIC_0_GPO_WIDTH 32
 
@@ -213,6 +219,7 @@ void external_interrupt_handler(HANDLER_DATATYPE cause);
 #define BSP_USE_SPI0 0 /* SPI0 is Flash memory, don't use it directly */
 #define XPAR_SPI_0_DEVICE_ID 0
 #define XPAR_SPI_0_BASEADDR 0x4000000ULL
+#define XPAR_SPI_0_SIZE 0x1000
 #define XPAR_SPI_0_FIFO_EXIST 0
 #define XPAR_SPI_0_SLAVE_ONLY 0
 #define XPAR_SPI_0_NUM_SS_BITS 0
@@ -234,6 +241,7 @@ void external_interrupt_handler(HANDLER_DATATYPE cause);
 
 #define XPAR_SPI_1_DEVICE_ID 1
 #define XPAR_SPI_1_BASEADDR (0x62320000ULL)
+#define XPAR_SPI_1_SIZE 0x1000
 #define XPAR_SPI_1_FIFO_EXIST 0
 #define XPAR_SPI_1_SLAVE_ONLY 0
 #define XPAR_SPI_1_NUM_SS_BITS 1
@@ -257,6 +265,7 @@ void external_interrupt_handler(HANDLER_DATATYPE cause);
 #define XPAR_XGPIO_NUM_INSTANCES 1
 #define XPAR_GPIO_0_DEVICE_ID 0
 #define XPAR_GPIO_0_BASEADDR 0x62330000ULL
+#define XPAR_GPIO_0_SIZE 0x1000
 #define XPAR_GPIO_0_INTERRUPT_PRESENT 0
 #define XPAR_GPIO_0_IS_DUAL 1
 

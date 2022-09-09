@@ -86,6 +86,13 @@
 
 #include "xiic.h"
 #include "xiic_i.h"
+#include "bsp.h"
+
+#include <FreeRTOSConfig.h>
+
+#ifdef __CHERI_PURE_CAPABILITY__
+#include <cheri/cheri-utility.h>
+#endif /* __CHERI_PURE_CAPABILITY__ */
 
 /************************** Constant Definitions ***************************/
 
@@ -176,6 +183,15 @@ int XIic_CfgInitialize(XIic *InstancePtr, XIic_Config * Config,
 	 */
 	InstancePtr->IsStarted = 0;
 	InstancePtr->BaseAddress = EffectiveAddr;
+
+	#ifdef __CHERI_PURE_CAPABILITY__
+		InstancePtr->BaseAddress = cheri_build_data_cap((ptraddr_t) EffectiveAddr,
+				XPAR_IIC_0_SIZE,
+				__CHERI_CAP_PERMISSION_GLOBAL__ |
+				__CHERI_CAP_PERMISSION_PERMIT_LOAD__ |
+				__CHERI_CAP_PERMISSION_PERMIT_STORE__);
+	#endif
+
 	InstancePtr->RecvHandler = XIic_StubHandler;
 	InstancePtr->RecvBufferPtr = NULL;
 	InstancePtr->SendHandler = XIic_StubHandler;

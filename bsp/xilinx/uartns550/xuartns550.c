@@ -74,6 +74,13 @@
 #include "xuartns550.h"
 #include "xuartns550_i.h"
 #include "xil_io.h"
+#include "bsp.h"
+
+#include <FreeRTOSConfig.h>
+
+#ifdef __CHERI_PURE_CAPABILITY__
+#include <cheri/cheri-utility.h>
+#endif /* __CHERI_PURE_CAPABILITY__ */
 
 /************************** Constant Definitions ****************************/
 
@@ -149,6 +156,15 @@ int XUartNs550_CfgInitialize(XUartNs550 *InstancePtr,
 	 * Setup the data that is from the configuration information
 	 */
 	InstancePtr->BaseAddress = EffectiveAddr;
+
+	#ifdef __CHERI_PURE_CAPABILITY__
+		InstancePtr->BaseAddress = cheri_build_data_cap((ptraddr_t) EffectiveAddr,
+				XPAR_UARTNS550_0_SIZE,
+				__CHERI_CAP_PERMISSION_GLOBAL__ |
+				__CHERI_CAP_PERMISSION_PERMIT_LOAD__ |
+				__CHERI_CAP_PERMISSION_PERMIT_STORE__);
+	#endif
+
 	InstancePtr->InputClockHz = Config->InputClockHz;
 
 	/*

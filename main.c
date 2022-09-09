@@ -1,4 +1,7 @@
 /*
+ * Copyright (c) 2021 Hesham Almatary <Hesham.Almatary@cl.cam.ac.uk>
+ * See LICENSE_CHERI
+ *
  * FreeRTOS Kernel V10.1.1
  * Copyright (C) 2018 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
@@ -37,6 +40,17 @@
 /* Bsp includes. */
 #include "bsp.h"
 
+#ifdef __CHERI_PURE_CAPABILITY__
+    #include <cheri_init_globals.h>
+    #include <cheri/cheri-utility.h>
+
+    void _start_purecap( void )
+    {
+        cheri_init_globals_3( __builtin_cheri_global_data_get(),
+                              __builtin_cheri_program_counter_get(),
+                              __builtin_cheri_global_data_get() );
+    }
+#endif /* __CHERI_PURE_CAPABILITY__ */
 /******************************************************************************
  * This project provides test applications for Galois P1 SSITH processor.
  */
@@ -75,7 +89,6 @@ extern void main_besspin(void);
 #undef configGENERATE_RUN_TIME_STATS
 #pragma message "Demo type 13: Netboot"
 extern void main_netboot(void);
-
 #else
 #error "Unsupported demo type"
 #endif
@@ -140,9 +153,9 @@ uint64_t get_cycle_count(void)
  * and 20 minutes. Probably not a big issue though.
  * At 50HMz clock rate, 1 us = 50 ticks
  */
-uint32_t port_get_current_mtime(void)
+unsigned long port_get_current_mtime(void)
 {
-	return (uint32_t)(get_cycle_count() / (configCPU_CLOCK_HZ / 1000000));
+	return (unsigned long)(get_cycle_count() / (configCPU_CLOCK_HZ / 1000000));
 }
 
 /**

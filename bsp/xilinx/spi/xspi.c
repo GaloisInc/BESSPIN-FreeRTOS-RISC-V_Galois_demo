@@ -103,7 +103,14 @@
 /***************************** Include Files *********************************/
 
 #include "xspi.h"
+#include "bsp.h"
 // #include "xspi_i.h"
+
+#include <FreeRTOSConfig.h>
+
+#ifdef __CHERI_PURE_CAPABILITY__
+#include <cheri/cheri-utility.h>
+#endif /* __CHERI_PURE_CAPABILITY__ */
 
 /************************** Constant Definitions *****************************/
 
@@ -191,6 +198,15 @@ int XSpi_CfgInitialize(XSpi *InstancePtr, XSpi_Config *Config,
 	InstancePtr->RequestedBytes = 0;
 	InstancePtr->RemainingBytes = 0;
 	InstancePtr->BaseAddr = EffectiveAddr;
+
+	#ifdef __CHERI_PURE_CAPABILITY__
+		InstancePtr->BaseAddr = cheri_build_data_cap((ptraddr_t) EffectiveAddr,
+				XPAR_SPI_0_SIZE,
+				__CHERI_CAP_PERMISSION_GLOBAL__ |
+				__CHERI_CAP_PERMISSION_PERMIT_LOAD__ |
+				__CHERI_CAP_PERMISSION_PERMIT_STORE__);
+	#endif
+
 	InstancePtr->HasFifos = Config->HasFifos;
 	InstancePtr->SlaveOnly = Config->SlaveOnly;
 	InstancePtr->NumSlaveBits = Config->NumSlaveBits;
